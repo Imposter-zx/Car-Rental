@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-luxury-black text-white font-poppins antialiased;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-montserrat font-bold;
+}
+
+.glass-morphism {
+  @apply bg-luxury-gray/70 backdrop-blur-md border border-white/10;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400;
+}
+
+.text-gradient-red {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-primary to-primary-light font-bold;
+}
+
+.skeleton {
+  @apply bg-luxury-light animate-pulse rounded-2xl;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2;
+}
+
+.btn-secondary {
+  @apply border border-white/20 hover:bg-white/10 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-luxury-black;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-luxury-light rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/50;
+}

@@ -1,0 +1,108 @@
+export const cars = [
+  {
+    id: 1,
+    name: "Dacia Logan",
+    category: "Citadine",
+    transmission: "Manuelle",
+    fuel: "Diesel",
+    seats: 5,
+    price: 300,
+    image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=800", // Placeholder
+    badge: "Best Price",
+    available: true,
+    engine: "1.5 dCi",
+    description: "La Dacia Logan est la berline familiale par excellence, offrant un espace généreux et une économie de carburant imbattable."
+  },
+  {
+    id: 2,
+    name: "Dacia Sandero Stepway",
+    category: "Citadine",
+    transmission: "Manuelle",
+    fuel: "Diesel",
+    seats: 5,
+    price: 350,
+    image: "https://images.unsplash.com/photo-1621285853634-713b8dd6b5ee?auto=format&fit=crop&q=80&w=800",
+    badge: "Best Price",
+    available: true,
+    engine: "1.5 dCi",
+    description: "Moderne et robuste, la Sandero Stepway est parfaite pour naviguer dans les rues de Casablanca avec style."
+  },
+  {
+    id: 3,
+    name: "Dacia Duster",
+    category: "SUV",
+    transmission: "Manuelle",
+    fuel: "Diesel",
+    seats: 5,
+    price: 450,
+    image: "https://images.unsplash.com/photo-1619682817481-e994891cc1f5?auto=format&fit=crop&q=80&w=800",
+    available: true,
+    engine: "1.5 dCi 4x2",
+    description: "Un SUV polyvalent capable de vous emmener partout, du centre-ville aux plages environnantes."
+  },
+  {
+    id: 4,
+    name: "Renault Clio 5",
+    category: "Citadine",
+    transmission: "Manuelle",
+    fuel: "Diesel",
+    seats: 5,
+    price: 400,
+    image: "https://images.unsplash.com/photo-1606152424101-ad2f8a447bd5?auto=format&fit=crop&q=80&w=800",
+    available: true,
+    engine: "1.5 Blue dCi",
+    description: "La référence des citadines. Confortable, technologique et très agréable à conduire."
+  },
+  {
+    id: 5,
+    name: "Opel Corsa",
+    category: "Citadine",
+    transmission: "Automatique",
+    fuel: "Essence",
+    seats: 5,
+    price: 450,
+    image: "https://images.unsplash.com/photo-1609521262047-f82346ecd030?auto=format&fit=crop&q=80&w=800",
+    available: true,
+    engine: "1.2 Turbo",
+    description: "Design allemand et boîte automatique pour une conduite fluide et sans effort."
+  },
+  {
+    id: 6,
+    name: "Peugeot 208",
+    category: "Citadine",
+    transmission: "Automatique",
+    fuel: "Diesel",
+    seats: 5,
+    price: 500,
+    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=800",
+    available: true,
+    engine: "1.5 BlueHDi",
+    description: "L'élégance à la française. Un intérieur i-Cockpit futuriste pour une expérience premium."
+  },
+  {
+    id: 7,
+    name: "Hyundai Tucson",
+    category: "SUV",
+    transmission: "Automatique",
+    fuel: "Diesel",
+    seats: 5,
+    price: 800,
+    image: "https://images.unsplash.com/photo-1669023414166-a4cc7c0fe1f5?auto=format&fit=crop&q=80&w=800",
+    available: true,
+    engine: "1.6 CRDi",
+    description: "Un SUV premium avec tout le confort nécessaire pour vos déplacements professionnels ou familiaux."
+  },
+  {
+    id: 8,
+    name: "Volkswagen T-Roc",
+    category: "SUV",
+    transmission: "Automatique",
+    fuel: "Essence",
+    seats: 5,
+    price: 750,
+    image: "https://images.unsplash.com/photo-1632243193044-67bcc948019b?auto=format&fit=crop&q=80&w=800",
+    available: false,
+    engine: "1.5 TSI",
+    description: "Sportif et robuste, le T-Roc combine le meilleur de la technologie Volkswagen avec un design audacieux."
+  }
+];
