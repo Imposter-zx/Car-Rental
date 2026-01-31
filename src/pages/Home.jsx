@@ -7,6 +7,7 @@ import { carService } from '../api/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import SkeletonLoader from '../components/SkeletonLoader';
 import FloatingActions from '../components/FloatingActions';
+import { cars as localCars } from '../data/cars';
 
 const Home = () => {
   const [cars, setCars] = useState([]);
@@ -27,7 +28,8 @@ const Home = () => {
         setError(null);
       } catch (err) {
         console.error('Error fetching cars:', err);
-        setError('Impossible de charger la flotte. Vérifiez que le serveur et la base de données sont en marche.');
+        setCars(localCars); // Fallback to local data
+        setError('Mode hors-ligne : Impossible de joindre la base de données. Affichage de la flotte locale.');
       } finally {
         setIsLoading(false);
       }

@@ -13,9 +13,32 @@ app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+let isConnected = false;
+const connectDB = async () => {
+  if (isConnected) return;
+  try {
+    if (mongoose.connection.readyState >= 1) {
+      isConnected = true;
+      return;
+    }
+    await mongoose.connect(process.env.MONGODB_URI);
+    isConnected = true;
+    console.log('Connected to MongoDB');
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+  }
+};
+
+// Middleware to connect to DB on every request for serverless
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
+// Root route for health check
+app.get('/', (req, res) => {
+  res.json({ status: 'API is running', environment: process.env.NODE_ENV });
+});
 
 // Auth Middleware
 const auth = (req, res, next) => {
