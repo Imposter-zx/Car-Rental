@@ -72,7 +72,7 @@ const CarCard = ({ car }) => {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Link 
-              to={`/car/${car._id || car.id}`}
+              to={`/car/${car.id}`}
               className="py-3 rounded-xl border border-white/10 flex items-center justify-center text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all text-white"
             >
               Voir détails

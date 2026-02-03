@@ -5,7 +5,7 @@ import {
   Fuel, Users, Gauge, Zap, CheckCircle2, 
   MessageSquare, ChevronLeft, Shield, Snowflake, MapPin 
 } from 'lucide-react';
-import { carService } from '../api/api';
+import { cars as localCars } from '../data/cars';
 import BookingModal from '../components/BookingModal';
 
 const CarDetails = () => {
@@ -16,18 +16,10 @@ const CarDetails = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const fetchCar = async () => {
-      try {
-        const { data } = await carService.getAll();
-        const found = data.find(c => c._id === id);
-        setCar(found);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCar();
+    // Find car from local data
+    const found = localCars.find(c => c.id === parseInt(id));
+    setCar(found);
+    setLoading(false);
   }, [id]);
 
   if (loading) return <div className="h-screen bg-luxury-black" />;

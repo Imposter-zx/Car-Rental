@@ -3,7 +3,6 @@ import Hero from '../components/Hero';
 import FilterBar from '../components/FilterBar';
 import CarCard from '../components/CarCard';
 import { Features, WhatsAppCTA, Testimonials, StatsSection, ConversionCTA } from '../components/Sections';
-import { carService } from '../api/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import SkeletonLoader from '../components/SkeletonLoader';
 import FloatingActions from '../components/FloatingActions';
@@ -18,26 +17,14 @@ const Home = () => {
     maxPrice: '1000'
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const { data } = await carService.getAll();
-        setCars(data);
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching cars:', err);
-        setCars(localCars); // Fallback to local data
-        setError('Mode hors-ligne : Impossible de joindre la base de données. Affichage de la flotte locale.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchCars();
+    // Use local data directly
+    setCars(localCars);
+    setIsLoading(false);
   }, []);
 
-  // Simulate local filtering for responsiveness
+  // Filter cars based on user criteria
   const filteredCars = useMemo(() => {
     return cars.filter(car => {
       const matchesSearch = car.name.toLowerCase().includes(filters.search.toLowerCase());
@@ -46,7 +33,7 @@ const Home = () => {
       const matchesPrice = car.price <= parseInt(filters.maxPrice);
       return matchesSearch && matchesCategory && matchesTransmission && matchesPrice;
     });
-  }, [filters]);
+  }, [cars, filters]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -78,13 +65,6 @@ const Home = () => {
 
         <FilterBar filters={filters} setFilters={setFilters} />
 
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-8 rounded-3xl text-center mb-10">
-            <p className="font-bold uppercase tracking-widest text-xs mb-2">Erreur de connexion</p>
-            <p className="text-sm opacity-80">{error}</p>
-          </div>
-        )}
-
         {isLoading ? (
           <SkeletonLoader />
         ) : filteredCars.length > 0 ? (
@@ -97,7 +77,7 @@ const Home = () => {
           >
             <AnimatePresence mode="popLayout">
               {filteredCars.map((car) => (
-                <motion.div key={car._id} variants={itemVariants}>
+                <motion.div key={car.id} variants={itemVariants}>
                   <CarCard car={car} />
                 </motion.div>
               ))}

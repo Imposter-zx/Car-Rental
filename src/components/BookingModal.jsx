@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Phone, MapPin, Calendar } from 'lucide-react';
-import { bookingService } from '../api/api';
 
 const BookingModal = ({ car, isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -16,20 +15,14 @@ const BookingModal = ({ car, isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      await bookingService.create({ ...formData, carId: car._id });
-      
-      // Open WhatsApp as well
-      const message = `Bonjour, je veux réserver la voiture: ${car.name}%0ANom: ${formData.name}%0ATél: ${formData.phone}%0ADate de début: ${formData.startDate}%0ADate de fin: ${formData.endDate}%0ALieu: ${formData.location}`;
-      window.open(`https://wa.me/212600000000?text=${message}`, '_blank');
-      
-      onClose();
-      alert('Réservation enregistrée ! Notre équipe vous contactera bientôt.');
-    } catch (err) {
-      alert('Erreur lors de la réservation.');
-    } finally {
-      setLoading(false);
-    }
+    
+    // Open WhatsApp with booking details
+    const message = `Bonjour, je veux réserver la voiture: ${car.name}%0ANom: ${formData.name}%0ATél: ${formData.phone}%0ADate de début: ${formData.startDate}%0ADate de fin: ${formData.endDate}%0ALieu: ${formData.location}`;
+    window.open(`https://wa.me/212600000000?text=${message}`, '_blank');
+    
+    onClose();
+    alert('Votre demande de réservation va être envoyée via WhatsApp !');
+    setLoading(false);
   };
 
   if (!isOpen) return null;

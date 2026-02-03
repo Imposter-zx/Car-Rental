@@ -46,7 +46,6 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
-          <Link to="/admin" className="text-xs text-luxury-light italic hover:text-white transition-colors">Admin</Link>
           <a href="https://wa.me/212600000000" className="btn-primary py-2 px-6 text-sm">
             <Phone className="w-4 h-4" />
             Nous Appeler
@@ -73,7 +72,6 @@ const Navbar = () => {
                 {link.name}
               </a>
             ))}
-            <Link to="/admin" onClick={() => setIsOpen(false)} className="text-sm text-gray-400">Admin</Link>
             <a href="https://wa.me/212600000000" className="btn-primary w-full">
               <Phone className="w-5 h-5" />
               Réserver sur WhatsApp
