@@ -28,12 +28,10 @@ const Navbar = () => {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass-morphism py-2' : 'bg-transparent py-4'}`}>
       {!scrolled && <TrustBar />}
       <div className="container mx-auto px-6 flex justify-between items-center mt-2">
-        <Link to="/" className="flex items-center gap-3 group">
-          <img 
-            src="/logo.png" 
-            alt="Gamil Rent Car Logo" 
-            className="h-12 w-auto object-contain group-hover:scale-110 transition-transform"
-          />
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="bg-primary p-2 rounded-lg group-hover:rotate-12 transition-transform">
+            <Car className="text-white w-6 h-6" />
+          </div>
           <span className="text-2xl font-bold tracking-tighter text-white">GAMIL <span className="text-primary">RENT CAR</span></span>
         </Link>
 
