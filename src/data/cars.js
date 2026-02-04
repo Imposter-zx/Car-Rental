@@ -100,7 +100,7 @@ export const cars = [
     fuel: "Essence",
     seats: 5,
     price: 750,
-    image: "https://images.unsplash.com/photo-1632243193044-67bcc948019b?auto=format&fit=crop&q=80&w=800",
+    image: "/vw-troc.png",
     available: false,
     engine: "1.5 TSI",
     description: "Sportif et robuste, le T-Roc combine le meilleur de la technologie Volkswagen avec un design audacieux."
