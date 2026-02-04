@@ -7,7 +7,7 @@ export const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 300,
-    image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=800", // Placeholder
+    image: "/dacia-logan.png",
     badge: "Best Price",
     available: true,
     engine: "1.5 dCi",
@@ -21,7 +21,7 @@ export const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 350,
-    image: "https://images.unsplash.com/photo-1621285853634-713b8dd6b5ee?auto=format&fit=crop&q=80&w=800",
+    image: "/dacia-sandero.png",
     badge: "Best Price",
     available: true,
     engine: "1.5 dCi",
@@ -35,7 +35,7 @@ export const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 450,
-    image: "https://images.unsplash.com/photo-1619682817481-e994891cc1f5?auto=format&fit=crop&q=80&w=800",
+    image: "/dacia-duster.png",
     available: true,
     engine: "1.5 dCi 4x2",
     description: "Un SUV polyvalent capable de vous emmener partout, du centre-ville aux plages environnantes."
