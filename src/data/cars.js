@@ -87,7 +87,7 @@ export const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 800,
-    image: "https://images.unsplash.com/photo-1669023414166-a4cc7c0fe1f5?auto=format&fit=crop&q=80&w=800",
+    image: "/hyundai-tucson.png",
     available: true,
     engine: "1.6 CRDi",
     description: "Un SUV premium avec tout le confort nécessaire pour vos déplacements professionnels ou familiaux."
