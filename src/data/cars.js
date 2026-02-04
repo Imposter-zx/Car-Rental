@@ -48,7 +48,7 @@ export const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 400,
-    image: "https://images.unsplash.com/photo-1606152424101-ad2f8a447bd5?auto=format&fit=crop&q=80&w=800",
+    image: "/renault-clio.png",
     available: true,
     engine: "1.5 Blue dCi",
     description: "La référence des citadines. Confortable, technologique et très agréable à conduire."
@@ -61,7 +61,7 @@ export const cars = [
     fuel: "Essence",
     seats: 5,
     price: 450,
-    image: "https://images.unsplash.com/photo-1609521262047-f82346ecd030?auto=format&fit=crop&q=80&w=800",
+    image: "/opel-corsa.png",
     available: true,
     engine: "1.2 Turbo",
     description: "Design allemand et boîte automatique pour une conduite fluide et sans effort."
@@ -74,7 +74,7 @@ export const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 500,
-    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=800",
+    image: "/peugeot-208.png",
     available: true,
     engine: "1.5 BlueHDi",
     description: "L'élégance à la française. Un intérieur i-Cockpit futuriste pour une expérience premium."
