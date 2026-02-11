@@ -18,6 +18,15 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    // Demo Mode Bypass: Allow login without backend for specific credentials
+    // This allows testing the dashboard on Vercel before the backend is deployed
+    if (email === 'admin@gamilrent.com' && password === 'admin123') {
+      const demoToken = 'demo-jwt-token-' + Date.now();
+      localStorage.setItem('token', demoToken);
+      setUser({ token: demoToken, isDemo: true });
+      return { success: true };
+    }
+
     try {
       const response = await api.post('/auth/login', { email, password });
       const { token } = response.data;
@@ -25,9 +34,17 @@ export const AuthProvider = ({ children }) => {
       setUser({ token });
       return { success: true };
     } catch (error) {
+      console.error('Login error:', error);
+      
+      // Secondary fallback: If the API is completely unreachable (e.g. on Vercel without backend)
+      // but credentials are provided, we can still allow entry for testing if desired.
+      // For now, we'll keep it strictly to the demo credentials above.
+      
       return {
         success: false,
-        error: error.response?.data?.message || 'Login failed',
+        error: error.code === 'ERR_NETWORK' 
+          ? 'Backend unreachable. Please use demo credentials for testing.' 
+          : (error.response?.data?.message || 'Login failed'),
       };
     }
   };
