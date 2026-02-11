@@ -7,12 +7,13 @@ import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './components/admin/AdminLayout';
 import FleetManagement from './pages/admin/FleetManagement';
+import Customers from './pages/admin/Customers';
+import Settings from './pages/admin/Settings';
 import { Footer } from './components/Sections';
 import { AuthProvider } from './context/AuthContext';
 
 // Admin Pages (to be implemented)
-const Bookings = () => <div className="text-luxury-black dark:text-white">Bookings View</div>;
-
+const Bookings = () => <div className="text-luxury-black dark:text-white p-8">Bookings View (Coming Soon)</div>;
 
 function App() {
   return (
@@ -42,6 +43,8 @@ function App() {
                 <Route index element={<Navigate to="/admin/cars" replace />} />
                 <Route path="cars" element={<FleetManagement />} />
                 <Route path="bookings" element={<Bookings />} />
+                <Route path="customers" element={<Customers />} />
+                <Route path="settings" element={<Settings />} />
               </Route>
             </Route>
           </Routes>
