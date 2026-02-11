@@ -35,11 +35,15 @@ const FleetManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchCars();
-  }, []);
+    if (user) {
+      fetchCars();
+    }
+  }, [user]);
 
   const fetchCars = async () => {
     if (isDemo) {
+      setIsLoading(true);
+      // Simulate API delay
       setTimeout(() => {
         setCars(mockCars);
         setIsLoading(false);
@@ -50,12 +54,11 @@ const FleetManagement = () => {
     try {
       setIsLoading(true);
       const response = await api.get('/cars');
-      setCars(response.data);
+      setCars(Array.isArray(response.data) ? response.data : mockCars);
     } catch (error) {
       if (error.code !== 'ERR_NETWORK') {
         console.error('Error fetching cars:', error);
       }
-      // Fallback to mock data for demo/initial purposes
       setCars(mockCars);
     } finally {
       setIsLoading(false);
@@ -74,48 +77,60 @@ const FleetManagement = () => {
 
   const handleDeleteCar = async (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
+      if (isDemo) {
+        setCars(prev => prev.filter(car => car.id !== id));
+        return;
+      }
       try {
         await api.delete(`/cars/${id}`);
-        setCars(cars.filter(car => car.id !== id));
+        setCars(prev => prev.filter(car => car.id !== id));
       } catch (error) {
         console.error('Error deleting car:', error);
-        // Manual filter for mock data
-        setCars(cars.filter(car => car.id !== id));
+        setCars(prev => prev.filter(car => car.id !== id));
       }
     }
   };
 
   const handleSubmitModal = async (formData) => {
+    if (isDemo) {
+      if (selectedCar) {
+        setCars(prev => prev.map(car => car.id === selectedCar.id ? { ...car, ...formData } : car));
+      } else {
+        const newCar = { ...formData, id: Date.now().toString() };
+        setCars(prev => [newCar, ...prev]);
+      }
+      setIsModalOpen(false);
+      return;
+    }
+
     try {
       if (selectedCar) {
-        const response = await api.put(`/cars/${selectedCar.id}`, formData);
-        setCars(cars.map(car => car.id === selectedCar.id ? { ...car, ...formData } : car));
+        await api.put(`/cars/${selectedCar.id}`, formData);
+        setCars(prev => prev.map(car => car.id === selectedCar.id ? { ...car, ...formData } : car));
       } else {
         const response = await api.post('/cars', formData);
-        const newCar = { ...formData, id: Date.now() }; // Mock ID
-        setCars([newCar, ...cars]);
+        const newCar = response.data || { ...formData, id: Date.now().toString() };
+        setCars(prev => [newCar, ...prev]);
       }
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error saving car:', error);
-      // Fallback for mock data
       if (selectedCar) {
-        setCars(cars.map(car => car.id === selectedCar.id ? { ...car, ...formData } : car));
+        setCars(prev => prev.map(car => car.id === selectedCar.id ? { ...car, ...formData } : car));
       } else {
-        setCars([{ ...formData, id: Date.now() }, ...cars]);
+        setCars(prev => [{ ...formData, id: Date.now().toString() }, ...prev]);
       }
       setIsModalOpen(false);
     }
   };
 
-  const filteredCars = cars.filter(car => 
+  const filteredCars = Array.isArray(cars) ? cars.filter(car => 
     car.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     car.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ) : [];
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold dark:text-white text-luxury-black">Gestion de Flotte</h1>
@@ -130,7 +145,6 @@ const FleetManagement = () => {
         </button>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
           { label: 'Total Véhicules', value: cars.length, icon: <CarIcon />, color: 'primary' },
@@ -140,7 +154,7 @@ const FleetManagement = () => {
         ].map((stat, i) => (
           <div key={i} className="bg-white dark:bg-luxury-gray p-6 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-2xl bg-${stat.color}-500/10 text-${stat.color}-500`}>
+              <div className={`p-3 rounded-2xl bg-${stat.color === 'primary' ? 'rose' : stat.color}-500/10 text-${stat.color === 'primary' ? 'rose' : stat.color}-500`}>
                 {stat.icon}
               </div>
               <ChevronRight className="text-gray-300" size={18} />
@@ -151,7 +165,6 @@ const FleetManagement = () => {
         ))}
       </div>
 
-      {/* Table Section */}
       <div className="bg-white dark:bg-luxury-gray rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-100 dark:border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="relative w-full md:w-96">

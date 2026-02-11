@@ -91,7 +91,7 @@ const AdminLayout = () => {
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500 dark:text-gray-400 transition-colors"
           >
-            {isSidebarOpen ? <Menu size={24} /> : <Search size={24} />}
+            {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
           <div className="flex items-center gap-6">
