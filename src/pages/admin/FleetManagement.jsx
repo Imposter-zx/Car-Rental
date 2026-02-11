@@ -16,6 +16,7 @@ import {
 import { motion } from 'framer-motion';
 import api from '../../services/api';
 import CarFormModal from '../../components/admin/CarFormModal';
+import { useAuth } from '../../context/AuthContext';
 
 // Mock data for initial development if API is not ready
 const mockCars = [
@@ -25,6 +26,8 @@ const mockCars = [
 ];
 
 const FleetManagement = () => {
+  const { user } = useAuth();
+  const isDemo = user?.isDemo;
   const [cars, setCars] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
@@ -36,12 +39,22 @@ const FleetManagement = () => {
   }, []);
 
   const fetchCars = async () => {
+    if (isDemo) {
+      setTimeout(() => {
+        setCars(mockCars);
+        setIsLoading(false);
+      }, 500);
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await api.get('/cars');
       setCars(response.data);
     } catch (error) {
-      console.error('Error fetching cars:', error);
+      if (error.code !== 'ERR_NETWORK') {
+        console.error('Error fetching cars:', error);
+      }
       // Fallback to mock data for demo/initial purposes
       setCars(mockCars);
     } finally {

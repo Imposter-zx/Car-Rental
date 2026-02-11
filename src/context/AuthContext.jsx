@@ -9,20 +9,18 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const isDemo = localStorage.getItem('isDemo') === 'true';
     if (token) {
-      // In a real app, you might want to verify the token with the backend here
-      // For now, we'll just assume it's valid if it exists
-      setUser({ token });
+      setUser({ token, isDemo });
     }
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
-    // Demo Mode Bypass: Allow login without backend for specific credentials
-    // This allows testing the dashboard on Vercel before the backend is deployed
     if (email === 'admin@gamilrent.com' && password === 'admin123') {
       const demoToken = 'demo-jwt-token-' + Date.now();
       localStorage.setItem('token', demoToken);
+      localStorage.setItem('isDemo', 'true');
       setUser({ token: demoToken, isDemo: true });
       return { success: true };
     }
@@ -51,6 +49,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('isDemo');
     setUser(null);
   };
 
