@@ -3,13 +3,14 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
 
 body {
-  @apply bg-luxury-black text-white font-poppins antialiased;
+  @apply bg-white dark:bg-luxury-black text-luxury-black dark:text-white font-poppins antialiased;
   margin: 0;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1,
@@ -22,27 +23,37 @@ h6 {
 }
 
 .glass-morphism {
-  @apply bg-luxury-gray/70 backdrop-blur-md border border-white/10;
+  @apply bg-white/70 dark:bg-luxury-gray/70 backdrop-blur-md border border-gray-200 dark:border-white/10;
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-luxury-black to-gray-600 dark:from-white dark:to-gray-400;
 }
 
 .text-gradient-red {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-primary to-primary-light font-bold;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-light font-bold;
 }
 
 .skeleton {
-  @apply bg-luxury-light animate-pulse rounded-2xl;
+  @apply bg-gray-200 dark:bg-luxury-light animate-pulse rounded-2xl;
 }
 
 .btn-primary {
-  @apply bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2;
+  @apply bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40;
 }
 
 .btn-secondary {
-  @apply border border-white/20 hover:bg-white/10 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2;
+  @apply border border-gray-200 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/10 text-luxury-black dark:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 flex items-center justify-center gap-2;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
 ::-webkit-scrollbar {
@@ -50,13 +61,14 @@ h6 {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-luxury-black;
+  @apply bg-white dark:bg-luxury-black;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-luxury-light rounded-full;
+  @apply bg-gray-300 dark:bg-luxury-light rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-primary/50;
 }
+
