@@ -23,7 +23,7 @@ const AdminLayout = () => {
   const handleLogout = () => {
     console.log('Admin logout initiated');
     logout();
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   const menuItems = [
