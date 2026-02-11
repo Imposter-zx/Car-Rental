@@ -18,17 +18,14 @@ import api from '../../services/api';
 import CarFormModal from '../../components/admin/CarFormModal';
 import { useAuth } from '../../context/AuthContext';
 
-// Mock data for initial development if API is not ready
-const mockCars = [
-  { id: 1, name: 'Dacia Logan', category: 'Compact', transmission: 'Manuel', fuel: 'Diesel', price: 300, isAvailable: true, image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=800' },
-  { id: 2, name: 'Dacia Duster', category: 'SUV', transmission: 'Manuel', fuel: 'Diesel', price: 500, isAvailable: true, image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800' },
-  { id: 3, name: 'Renault Clio', category: 'City', transmission: 'Automatique', fuel: 'Essence', price: 400, isAvailable: false, image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=800' },
-  { id: 4, name: 'Dacia Sandero', category: 'Compact', transmission: 'Manuel', fuel: 'Essence', price: 350, isAvailable: true, image: 'https://images.unsplash.com/photo-1621235118712-4f3586cded21?auto=format&fit=crop&q=80&w=800' },
-  { id: 5, name: 'Renault Captur', category: 'SUV', transmission: 'Automatique', fuel: 'Hybride', price: 600, isAvailable: true, image: 'https://images.unsplash.com/photo-1619767886558-efdf259cde1a?auto=format&fit=crop&q=80&w=800' },
-  { id: 6, name: 'Renault Megane', category: 'Berline', transmission: 'Manuel', fuel: 'Diesel', price: 550, isAvailable: true, image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=800' },
-  { id: 7, name: 'Dacia Jogger', category: 'Famille', transmission: 'Manuel', fuel: 'LPG', price: 450, isAvailable: true, image: 'https://images.unsplash.com/photo-1632243193044-64ecdfda003a?auto=format&fit=crop&q=80&w=800' },
-  { id: 8, name: 'Renault Kadjar', category: 'SUV', transmission: 'Automatique', fuel: 'Diesel', price: 700, isAvailable: true, image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=800' },
-];
+import { cars as initialCars } from '../../data/cars';
+
+// Transform local data to match dashboard format if necessary
+const mockCars = initialCars.map(car => ({
+  ...car,
+  isAvailable: car.available !== undefined ? car.available : true,
+  image: car.image.startsWith('/') ? car.image : car.image // Handle both local and external
+}));
 
 const FleetManagement = () => {
   const { user } = useAuth();

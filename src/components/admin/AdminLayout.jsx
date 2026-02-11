@@ -21,8 +21,9 @@ const AdminLayout = () => {
   const { logout } = useAuth();
 
   const handleLogout = () => {
+    console.log('Admin logout initiated');
     logout();
-    navigate('/login');
+    window.location.href = '/login';
   };
 
   const menuItems = [
