@@ -8,6 +8,8 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import FloatingActions from '../components/FloatingActions';
 import { cars as localCars } from '../data/cars';
 
+import api from '../services/api';
+
 const Home = () => {
   const [cars, setCars] = useState([]);
   const [filters, setFilters] = useState({
@@ -19,9 +21,20 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Use local data directly
-    setCars(localCars);
-    setIsLoading(false);
+    const fetchCars = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/cars');
+        setCars(Array.isArray(response.data) ? response.data : localCars);
+      } catch (error) {
+        console.error('Error fetching cars for home page:', error);
+        setCars(localCars); // Fallback to local data
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCars();
   }, []);
 
   // Filter cars based on user criteria

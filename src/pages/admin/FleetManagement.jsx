@@ -80,15 +80,17 @@ const FleetManagement = () => {
   const handleDeleteCar = async (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
       if (isDemo) {
-        setCars(prev => prev.filter(car => car.id !== id));
+        setCars(prev => prev.filter(car => car._id !== id && car.id !== id));
         return;
       }
       try {
         await api.delete(`/cars/${id}`);
-        setCars(prev => prev.filter(car => car.id !== id));
+        console.log('Car deleted successfully');
+        await fetchCars(); // Refetch to ensure sync with server
       } catch (error) {
         console.error('Error deleting car:', error);
-        setCars(prev => prev.filter(car => car.id !== id));
+        // Fallback: update local state if fetch fails but delete was likely successful
+        setCars(prev => prev.filter(car => car._id !== id && car.id !== id));
       }
     }
   };
@@ -96,7 +98,8 @@ const FleetManagement = () => {
   const handleSubmitModal = async (formData) => {
     if (isDemo) {
       if (selectedCar) {
-        setCars(prev => prev.map(car => car.id === selectedCar.id ? { ...car, ...formData } : car));
+        const carId = selectedCar._id || selectedCar.id;
+        setCars(prev => prev.map(car => (car._id === carId || car.id === carId) ? { ...car, ...formData } : car));
       } else {
         const newCar = { ...formData, id: Date.now().toString() };
         setCars(prev => [newCar, ...prev]);
@@ -106,21 +109,24 @@ const FleetManagement = () => {
     }
 
     try {
+      const carId = selectedCar?._id || selectedCar?.id;
       if (selectedCar) {
-        await api.put(`/cars/${selectedCar.id}`, formData);
-        setCars(prev => prev.map(car => car.id === selectedCar.id ? { ...car, ...formData } : car));
+        await api.put(`/cars/${carId}`, formData);
+        console.log('Car updated successfully');
       } else {
-        const response = await api.post('/cars', formData);
-        const newCar = response.data || { ...formData, id: Date.now().toString() };
-        setCars(prev => [newCar, ...prev]);
+        await api.post('/cars', formData);
+        console.log('Car added successfully');
       }
+      await fetchCars(); // Always refetch from source of truth
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error saving car:', error);
+      // Fallback state update for better UX if refetching fails
       if (selectedCar) {
-        setCars(prev => prev.map(car => car.id === selectedCar.id ? { ...car, ...formData } : car));
+        const carId = selectedCar._id || selectedCar.id;
+        setCars(prev => prev.map(car => (car._id === carId || car.id === carId) ? { ...car, ...formData } : car));
       } else {
-        setCars(prev => [{ ...formData, id: Date.now().toString() }, ...prev]);
+        setCars(prev => [{ ...formData, id: Date.now().toString(), isAvailable: true }, ...prev]);
       }
       setIsModalOpen(false);
     }
