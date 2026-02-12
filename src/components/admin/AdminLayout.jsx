@@ -10,7 +10,8 @@ import {
   X, 
   Bell, 
   Search,
-  PlusCircle
+  PlusCircle,
+  Globe
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -21,9 +22,8 @@ const AdminLayout = () => {
   const { logout } = useAuth();
 
   const handleLogout = () => {
-    console.log('Admin logout initiated');
     logout();
-    window.location.href = '/';
+    navigate('/login');
   };
 
   const menuItems = [
@@ -73,7 +73,15 @@ const AdminLayout = () => {
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-200 dark:border-white/5">
+        <div className="p-4 border-t border-gray-200 dark:border-white/5 space-y-2">
+          <Link
+            to="/"
+            className={`flex items-center gap-4 p-3 rounded-xl w-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-primary transition-all`}
+          >
+            <Globe size={20} />
+            {isSidebarOpen && <span className="font-medium">Voir le site</span>}
+          </Link>
+
           <button
             onClick={handleLogout}
             className={`flex items-center gap-4 p-3 rounded-xl w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all`}
