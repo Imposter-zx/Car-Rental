@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { X, Save, Car, Camera, DollarSign, Info, ToggleLeft, ToggleRight } from 'lucide-react';
+import { X, Save, Car, Camera, DollarSign, Info, ToggleLeft, ToggleRight, Upload, Link as LinkIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const CarFormModal = ({ isOpen, onClose, onSubmit, car = null }) => {
+  const [imageSource, setImageSource] = useState('url');
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -18,6 +18,7 @@ const CarFormModal = ({ isOpen, onClose, onSubmit, car = null }) => {
   useEffect(() => {
     if (car) {
       setFormData(car);
+      setImageSource(car.image?.startsWith('data:') ? 'file' : 'url');
     } else {
       setFormData({
         name: '',
@@ -39,6 +40,17 @@ const CarFormModal = ({ isOpen, onClose, onSubmit, car = null }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, image: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -178,25 +190,80 @@ const CarFormModal = ({ isOpen, onClose, onSubmit, car = null }) => {
                   <Camera size={16} /> Médias & Statut
                 </h3>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">URL de l'image (Cloudinary/Unsplash)</label>
-                  <input
-                    type="url"
-                    name="image"
-                    required
-                    value={formData.image}
-                    onChange={handleChange}
-                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all dark:text-white"
-                    placeholder="https://images.unsplash.com/..."
-                  />
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Illustration du véhicule</label>
+                    <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-xl border border-gray-200 dark:border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => setImageSource('url')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                          imageSource === 'url' 
+                            ? 'bg-white dark:bg-white/10 text-primary shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                        }`}
+                      >
+                        <LinkIcon size={14} /> URL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setImageSource('file')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                          imageSource === 'file' 
+                            ? 'bg-white dark:bg-white/10 text-primary shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                        }`}
+                      >
+                        <Upload size={14} /> Fichier
+                      </button>
+                    </div>
+                  </div>
+
+                  {imageSource === 'url' ? (
+                    <input
+                      type="url"
+                      name="image"
+                      required
+                      value={formData.image}
+                      onChange={handleChange}
+                      className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all dark:text-white"
+                      placeholder="https://images.unsplash.com/..."
+                    />
+                  ) : (
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="car-image-upload"
+                      />
+                      <label 
+                        htmlFor="car-image-upload"
+                        className="flex items-center justify-center gap-3 w-full bg-gray-50 dark:bg-white/5 border-2 border-dashed border-gray-200 dark:border-white/10 rounded-2xl py-8 px-4 hover:border-primary/50 cursor-pointer transition-all group"
+                      >
+                        <div className="bg-primary/10 p-3 rounded-full group-hover:scale-110 transition-transform">
+                          <Upload className="text-primary w-6 h-6" />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-sm font-bold dark:text-white">Choisir une image</p>
+                          <p className="text-xs text-gray-500">JPG, PNG ou WebP (max 5MB)</p>
+                        </div>
+                      </label>
+                    </div>
+                  )}
+
                   {formData.image && (
-                    <div className="mt-4 aspect-video rounded-2xl overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+                    <div className="mt-4 aspect-video rounded-3xl overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 relative group">
                       <img 
                         src={formData.image} 
                         alt="Preview" 
                         className="w-full h-full object-cover"
-                        onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=Invalid+URL'; }}
+                        onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=Format+invalide'; }}
                       />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                         <span className="text-white text-xs font-bold uppercase tracking-widest bg-black/60 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">Aperçu en direct</span>
+                      </div>
                     </div>
                   )}
                 </div>
