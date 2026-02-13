@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { X, Save, Car, Camera, DollarSign, Info, ToggleLeft, ToggleRight, Upload, Link as LinkIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
