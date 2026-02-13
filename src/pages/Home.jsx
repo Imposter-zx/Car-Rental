@@ -6,7 +6,6 @@ import { Features, WhatsAppCTA, Testimonials, StatsSection, ConversionCTA } from
 import { motion, AnimatePresence } from 'framer-motion';
 import SkeletonLoader from '../components/SkeletonLoader';
 import FloatingActions from '../components/FloatingActions';
-import { cars as localCars } from '../data/cars';
 
 import api from '../services/api';
 
@@ -25,10 +24,10 @@ const Home = () => {
       try {
         setIsLoading(true);
         const response = await api.get('/cars');
-        setCars(Array.isArray(response.data) ? response.data : localCars);
+        setCars(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error('Error fetching cars for home page:', error);
-        setCars(localCars); // Fallback to local data
+        setCars([]); 
       } finally {
         setIsLoading(false);
       }

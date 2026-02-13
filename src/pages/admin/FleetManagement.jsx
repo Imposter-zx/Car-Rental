@@ -18,15 +18,6 @@ import api from '../../services/api';
 import CarFormModal from '../../components/admin/CarFormModal';
 import { useAuth } from '../../context/AuthContext';
 
-import { cars as initialCars } from '../../data/cars';
-
-// Transform local data to match dashboard format if necessary
-const mockCars = initialCars.map(car => ({
-  ...car,
-  isAvailable: car.available !== undefined ? car.available : true,
-  image: car.image.startsWith('/') ? car.image : car.image // Handle both local and external
-}));
-
 const FleetManagement = () => {
   const { user } = useAuth();
   const isDemo = user?.isDemo;
@@ -56,12 +47,12 @@ const FleetManagement = () => {
     try {
       setIsLoading(true);
       const response = await api.get('/cars');
-      setCars(Array.isArray(response.data) ? response.data : mockCars);
+      setCars(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       if (error.code !== 'ERR_NETWORK') {
         console.error('Error fetching cars:', error);
       }
-      setCars(mockCars);
+      setCars([]);
     } finally {
       setIsLoading(false);
     }
@@ -223,7 +214,7 @@ const FleetManagement = () => {
               ) : (
                 filteredCars.map((car) => (
                   <motion.tr 
-                    key={car.id} 
+                    key={car._id || car.id} 
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     className="group hover:bg-gray-50 dark:hover:bg-white/2 transition-colors"
@@ -272,7 +263,7 @@ const FleetManagement = () => {
                           <Edit2 size={18} />
                         </button>
                         <button 
-                          onClick={() => handleDeleteCar(car.id)}
+                          onClick={() => handleDeleteCar(car._id || car.id)}
                           className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                           title="Supprimer"
                         >
