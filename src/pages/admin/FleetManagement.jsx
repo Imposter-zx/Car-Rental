@@ -38,7 +38,7 @@ const FleetManagement = () => {
       setIsLoading(true);
       // Simulate API delay
       setTimeout(() => {
-        setCars(mockCars);
+        setCars([]);
         setIsLoading(false);
       }, 500);
       return;
