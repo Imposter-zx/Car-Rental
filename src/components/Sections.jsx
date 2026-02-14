@@ -99,14 +99,30 @@ export const StatsSection = () => {
   );
 };
 
+// Helper for dynamic WhatsApp link
+const useWhatsApp = () => {
+  const [number, setNumber] = useState('212600000000');
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const res = await api.get('/config');
+        if (res.data && res.data.whatsapp_number) setNumber(res.data.whatsapp_number);
+      } catch (e) {}
+    };
+    fetchConfig();
+  }, []);
+  return number;
+};
+
 export const WhatsAppCTA = () => {
+  const whatsappNumber = useWhatsApp();
   return (
     <section className="py-20 bg-luxury-gray">
       <div className="container mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl mb-6 text-white text-gradient-red uppercase font-black tracking-tighter italic">Besoin d'une voiture rapidement ?</h2>
         <p className="text-gray-400 mb-10 max-w-xl mx-auto uppercase tracking-widest text-xs font-bold">Contactez-nous directement sur WhatsApp pour une réservation instantanée sans paperasse inutile.</p>
         <a 
-          href="https://wa.me/212600000000" 
+          href={`https://wa.me/${whatsappNumber}`} 
           className="inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white px-10 py-4 rounded-full font-bold text-lg transition-all shadow-[0_10px_30px_rgba(37,211,102,0.3)] transform hover:-translate-y-1"
         >
           <MessageSquare className="w-6 h-6 fill-white" />
@@ -151,6 +167,7 @@ export const Testimonials = () => {
 };
 
 export const ConversionCTA = () => {
+  const whatsappNumber = useWhatsApp();
   return (
     <section className="py-24 relative overflow-hidden bg-luxury-black border-t border-white/5">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full -z-10"></div>
@@ -161,7 +178,7 @@ export const ConversionCTA = () => {
         </h2>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
           <a href="#cars" className="btn-primary w-full sm:w-auto px-12 py-5 text-xl">Voir les voitures</a>
-          <a href="https://wa.me/212600000000" className="btn-secondary w-full sm:w-auto px-12 py-5 text-xl">Contacter sur WhatsApp</a>
+          <a href={`https://wa.me/${whatsappNumber}`} className="btn-secondary w-full sm:w-auto px-12 py-5 text-xl">Contacter sur WhatsApp</a>
         </div>
       </div>
     </section>
@@ -169,6 +186,7 @@ export const ConversionCTA = () => {
 };
 
 export const Footer = () => {
+  const whatsappNumber = useWhatsApp();
   return (
     <footer id="contact" className="py-16 bg-luxury-black border-t border-white/5">
       <div className="container mx-auto px-6">
@@ -199,8 +217,10 @@ export const Footer = () => {
           <div>
             <h4 className="text-white font-bold mb-6 uppercase text-xs tracking-[0.2em] opacity-50">Contact Us</h4>
             <ul className="flex flex-col gap-4 text-gray-500 text-sm font-bold uppercase tracking-widest">
-              <li className="hover:text-white transition-colors cursor-pointer flex items-center gap-2 italic text-primary">Tél: +212 6 00 00 00 00</li>
-              <li className="hover:text-white transition-colors cursor-pointer text-green-500">WhatsApp: +212 6 00 00 00 00</li>
+              <li className="hover:text-white transition-colors cursor-pointer flex items-center gap-2 italic text-primary">Tél: +{whatsappNumber}</li>
+              <li className="hover:text-white transition-colors cursor-pointer text-green-500">
+                <a href={`https://wa.me/${whatsappNumber}`}>WhatsApp: +{whatsappNumber}</a>
+              </li>
               <li className="hover:text-white transition-colors cursor-pointer lowercase">contact@gamilrentcar.ma</li>
             </ul>
           </div>

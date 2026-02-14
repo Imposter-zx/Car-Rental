@@ -8,43 +8,60 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const isDemo = localStorage.getItem('isDemo') === 'true';
-    if (token) {
-      setUser({ token, isDemo });
-    }
-    setLoading(false);
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      const isDemo = localStorage.getItem('isDemo') === 'true';
+      if (token && !isDemo) {
+        try {
+          const response = await api.get('/auth/me');
+          setUser({ ...response.data, token });
+        } catch (error) {
+          console.error('Error fetching user:', error);
+          localStorage.removeItem('token');
+        }
+      } else if (token && isDemo) {
+        setUser({ token, isDemo, email: 'admin@gamil.ma', name: 'Admin Gamil' });
+      }
+      setLoading(false);
+    };
+    fetchUser();
   }, []);
 
   const login = async (email, password) => {
-    if (email === 'admin@gamilrent.com' && password === 'admin123') {
+    // Demo credentials fallback (matching seed)
+    if (email === 'admin@gamil.ma' && password === 'admin123') {
       const demoToken = 'demo-jwt-token-' + Date.now();
       localStorage.setItem('token', demoToken);
       localStorage.setItem('isDemo', 'true');
-      setUser({ token: demoToken, isDemo: true });
+      setUser({ token: demoToken, isDemo: true, email: 'admin@gamil.ma', name: 'Admin Gamil' });
       return { success: true };
     }
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { token } = response.data;
+      const { token, user: userData } = response.data;
       localStorage.setItem('token', token);
-      setUser({ token });
+      localStorage.setItem('isDemo', 'false');
+      setUser({ ...userData, token });
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
-      
-      // Secondary fallback: If the API is completely unreachable (e.g. on Vercel without backend)
-      // but credentials are provided, we can still allow entry for testing if desired.
-      // For now, we'll keep it strictly to the demo credentials above.
-      
       return {
         success: false,
-        error: error.code === 'ERR_NETWORK' 
-          ? 'Backend unreachable. Please use demo credentials for testing.' 
-          : (error.response?.data?.message || 'Login failed'),
+        error: error.response?.data?.message || 'Login failed',
       };
     }
+  };
+
+  const updateProfile = async (data) => {
+    const response = await api.put('/auth/profile', data);
+    setUser(prev => ({ ...prev, ...response.data }));
+    return response.data;
+  };
+
+  const updatePassword = async (data) => {
+    const response = await api.put('/auth/password', data);
+    return response.data;
   };
 
   const logout = () => {
@@ -54,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateProfile, updatePassword, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -8,9 +8,24 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [whatsappNumber, setWhatsappNumber] = useState('212600000000');
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await api.get('/config');
+        if (response.data && response.data.whatsapp_number) {
+          setWhatsappNumber(response.data.whatsapp_number);
+        }
+      } catch (error) {
+        console.error('Error fetching navbar config:', error);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -110,10 +125,10 @@ const Navbar = () => {
               </Link>
             )}
 
-            <a href="https://wa.me/212600000000" className="btn-primary py-2 px-6 text-sm">
-              <Phone className="w-4 h-4" />
-              Nous Appeler
-            </a>
+        <a href={`https://wa.me/${whatsappNumber}`} className="btn-primary w-full justify-center py-4">
+          <Phone className="w-5 h-5" />
+          Réserver sur WhatsApp
+        </a>
           </div>
         </div>
 

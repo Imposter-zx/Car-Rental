@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from './models/User.js';
 import Car from './models/Car.js';
+import Config from './models/Config.js';
 
 dotenv.config();
 
@@ -111,15 +112,25 @@ const seedDatabase = async () => {
 
     // Nettoyage existant
     await User.deleteMany();
-    await Car.deleteMany();
-    console.log('Anciennes données supprimées.');
+    await User.deleteMany({});
+    await Car.deleteMany({});
+    await Config.deleteMany({});
 
-    // Création Admin
+    // Create admin user
     const admin = new User({
       email: 'admin@gamil.ma',
-      password: 'admin123' // Sera haché par le middleware du modèle
+      password: 'admin123',
+      name: 'Admin Gamil',
+      role: 'admin'
     });
     await admin.save();
+
+    // Create default config
+    const defaultConfig = [
+      { key: 'whatsapp_number', value: '212600000000', description: 'Numéro WhatsApp principal' },
+      { key: 'maintenance_mode', value: false, description: 'Statut de maintenance du site' }
+    ];
+    await Config.insertMany(defaultConfig);
     console.log('Utilisateur Admin créé (admin@gamil.ma / admin123)');
 
     // Création Voitures
