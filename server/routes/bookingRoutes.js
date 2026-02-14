@@ -1,11 +1,11 @@
 import express from 'express';
 import Booking from '../models/Booking.js';
-import { useAuth } from '../middleware/auth.js'; // Assuming it's in middleware/auth.js
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
 // GET all bookings (Admin only)
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 });
     res.json(bookings);
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
 });
 
 // UPDATE booking status (Admin)
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', auth, async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: 'Réservation non trouvée' });
@@ -50,7 +50,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // DELETE booking (Admin)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: 'Réservation non trouvée' });

@@ -71,7 +71,7 @@ const Settings = () => {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Email</label>
-                  <input type="email" defaultValue="admin@gamilrent.com" className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all dark:text-white" />
+                  <input type="email" defaultValue="admin@gamil.ma" className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all dark:text-white" />
                 </div>
               </div>
 
