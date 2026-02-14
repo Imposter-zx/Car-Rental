@@ -12,6 +12,7 @@ const CarFormModal = ({ isOpen, onClose, onSubmit, car = null }) => {
     seats: 5,
     price: '',
     image: '',
+    engine: '',
     description: '',
     isAvailable: true
   });
@@ -29,6 +30,7 @@ const CarFormModal = ({ isOpen, onClose, onSubmit, car = null }) => {
         seats: 5,
         price: '',
         image: '',
+        engine: '',
         description: '',
         isAvailable: true
       });
@@ -144,6 +146,19 @@ const CarFormModal = ({ isOpen, onClose, onSubmit, car = null }) => {
                     </div>
                   </div>
                 </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Spécification Moteur</label>
+                  <input
+                    type="text"
+                    name="engine"
+                    value={formData.engine}
+                    onChange={handleChange}
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all dark:text-white"
+                    placeholder="ex: 1.5 dCi, 2.0 TDI..."
+                  />
+                </div>
+
 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
