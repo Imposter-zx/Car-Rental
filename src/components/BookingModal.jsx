@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Phone, MapPin, Calendar } from 'lucide-react';
+import api from '../services/api';
 
 const BookingModal = ({ car, isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -16,13 +17,43 @@ const BookingModal = ({ car, isOpen, onClose }) => {
     e.preventDefault();
     setLoading(true);
     
-    // Open WhatsApp with booking details
-    const message = `Bonjour, je veux réserver la voiture: ${car.name}%0ANom: ${formData.name}%0ATél: ${formData.phone}%0ADate de début: ${formData.startDate}%0ADate de fin: ${formData.endDate}%0ALieu: ${formData.location}`;
-    window.open(`https://wa.me/212600000000?text=${message}`, '_blank');
-    
-    onClose();
-    alert('Votre demande de réservation va être envoyée via WhatsApp !');
-    setLoading(false);
+    try {
+      // Calculate total price if dates are selected
+      let totalPrice = car.price;
+      if (formData.startDate && formData.endDate) {
+        const start = new Date(formData.startDate);
+        const end = new Date(formData.endDate);
+        const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1;
+        totalPrice = car.price * (days > 0 ? days : 1);
+      }
+
+      // Save to database
+      await api.post('/bookings', {
+        carId: car._id || car.id,
+        carName: car.name,
+        userName: formData.name,
+        userPhone: formData.phone,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        location: formData.location,
+        totalPrice: totalPrice
+      });
+
+      // Open WhatsApp with booking details
+      const message = `Bonjour, je veux réserver la voiture: ${car.name}%0ANom: ${formData.name}%0ATél: ${formData.phone}%0ADate de début: ${formData.startDate}%0ADate de fin: ${formData.endDate}%0ALieu: ${formData.location}%0APrix Estimé: ${totalPrice} DH`;
+      window.open(`https://wa.me/212600000000?text=${message}`, '_blank');
+      
+      onClose();
+      alert('Votre réservation a été enregistrée et la demande WhatsApp est ouverte !');
+    } catch (error) {
+      console.error('Error saving booking:', error);
+      // Fallback: still open WhatsApp if API fails
+      const message = `Bonjour, je veux réserver la voiture: ${car.name}%0ANom: ${formData.name}%0ATél: ${formData.phone}%0ADate de début: ${formData.startDate}%0ADate de fin: ${formData.endDate}%0ALieu: ${formData.location}`;
+      window.open(`https://wa.me/212600000000?text=${message}`, '_blank');
+      onClose();
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
