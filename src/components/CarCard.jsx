@@ -29,7 +29,7 @@ const CarCard = ({ car }) => {
               {car.badge}
             </span>
           )}
-          {car.available ? (
+          {(car.isAvailable !== undefined ? car.isAvailable : car.available) ? (
             <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider">
               Disponible aujourd'hui
             </span>

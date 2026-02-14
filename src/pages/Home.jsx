@@ -89,7 +89,7 @@ const Home = () => {
           >
             <AnimatePresence mode="popLayout">
               {filteredCars.map((car) => (
-                <motion.div key={car.id} variants={itemVariants}>
+                <motion.div key={car._id || car.id} variants={itemVariants}>
                   <CarCard car={car} />
                 </motion.div>
               ))}

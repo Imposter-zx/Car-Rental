@@ -78,7 +78,7 @@ const CarDetails = () => {
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-primary font-bold uppercase tracking-widest text-xs">{car.category}</span>
-                {car.available ? (
+                {(car.isAvailable !== undefined ? car.isAvailable : car.available) ? (
                   <span className="flex items-center gap-1 text-[10px] bg-green-500/20 text-green-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter shadow-sm border border-green-500/30">
                     <CheckCircle2 className="w-3 h-3" /> Disponible aujourd'hui
                   </span>
