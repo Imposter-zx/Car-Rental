@@ -27,17 +27,18 @@ const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  console.error('ERREUR: MONGODB_URI n’est pas défini dans le fichier .env');
-  process.exit(1);
+  console.error('ERREUR: MONGODB_URI n’est pas défini');
+} else {
+  mongoose.connect(MONGODB_URI)
+    .then(() => console.log('Connecté à MongoDB Atlas'))
+    .catch(err => console.error('Erreur de connexion MongoDB:', err.message));
 }
 
-mongoose.connect(MONGODB_URI)
-  .then(() => {
-    console.log('Connecté à MongoDB Atlas');
-    app.listen(PORT, () => {
-      console.log(`Serveur démarré sur le port ${PORT}`);
-    });
-  })
-  .catch(err => {
-    console.error('Erreur de connexion MongoDB:', err.message);
+// Only listen if not running in a serverless environment (like Vercel)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Serveur démarré sur le port ${PORT}`);
   });
+}
+
+export default app;
