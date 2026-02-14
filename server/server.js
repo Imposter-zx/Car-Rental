@@ -35,7 +35,7 @@ if (!MONGODB_URI) {
 }
 
 // Only listen if not running in a serverless environment (like Vercel)
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`Serveur démarré sur le port ${PORT}`);
   });
