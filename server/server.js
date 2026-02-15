@@ -16,8 +16,12 @@ const connectDB = async (req, res, next) => {
   try {
     const MONGODB_URI = process.env.MONGODB_URI;
     if (!MONGODB_URI) {
-      console.error('ERREUR: MONGODB_URI n’est pas défini dans les variables d’environnement');
-      return res.status(500).json({ message: 'Configuration de la base de données manquante' });
+      const availableKeys = Object.keys(process.env).filter(key => key.includes('MONGO') || key.includes('URI'));
+      console.error('ERREUR: MONGODB_URI n’est pas défini. Clés trouvées:', availableKeys);
+      return res.status(500).json({ 
+        message: 'Configuration de la base de données manquante',
+        hint: `Vérifiez votre dashboard Vercel. Clés détectées: ${availableKeys.join(', ') || 'Aucune'}`
+      });
     }
     
     await mongoose.connect(MONGODB_URI, {
@@ -55,22 +59,9 @@ app.get('/', (req, res) => {
   });
 });
 
-// Database connection
-const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  console.error('ERREUR: MONGODB_URI n’est pas défini');
-} else {
-  mongoose.connect(MONGODB_URI)
-    .then(() => console.log('Connecté à MongoDB Atlas'))
-    .catch(err => {
-      console.error('CRITICAL: Erreur de connexion initiale MongoDB:', err.message);
-    });
-}
-
+// Mongoose specific logging
 mongoose.connection.on('error', err => {
-  console.error('CRITICAL: Erreur Mongoose en cours d’exécution:', err);
+  console.error('CRITICAL: Erreur Mongoose:', err);
 });
 
 // App configuration and startup
