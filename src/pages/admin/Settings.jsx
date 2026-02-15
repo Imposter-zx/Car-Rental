@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
+import { useEffect } from 'react';
 
 const Settings = () => {
   const { user, updateProfile, updatePassword } = useAuth();
