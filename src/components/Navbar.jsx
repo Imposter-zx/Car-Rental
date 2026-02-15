@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Car, Menu, X, Phone, Sun, Moon, LayoutDashboard, LogOut, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 import TrustBar from './TrustBar';
 
 const Navbar = () => {

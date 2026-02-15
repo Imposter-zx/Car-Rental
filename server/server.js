@@ -20,7 +20,9 @@ const connectDB = async (req, res, next) => {
       return res.status(500).json({ message: 'Configuration de la base de données manquante' });
     }
     
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(MONGODB_URI, {
+      bufferCommands: false, // Disable buffering for better serverless error reporting
+    });
     console.log('Connexion MongoDB établie à la volée');
     next();
   } catch (error) {
