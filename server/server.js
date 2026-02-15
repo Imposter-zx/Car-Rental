@@ -9,11 +9,32 @@ import configRoutes from './routes/configRoutes.js';
 
 dotenv.config();
 
+// Database connection middleware (Required for Serverless/Vercel)
+const connectDB = async (req, res, next) => {
+  if (mongoose.connection.readyState >= 1) return next();
+  
+  try {
+    const MONGODB_URI = process.env.MONGODB_URI;
+    if (!MONGODB_URI) {
+      console.error('ERREUR: MONGODB_URI n’est pas défini dans les variables d’environnement');
+      return res.status(500).json({ message: 'Configuration de la base de données manquante' });
+    }
+    
+    await mongoose.connect(MONGODB_URI);
+    console.log('Connexion MongoDB établie à la volée');
+    next();
+  } catch (error) {
+    console.error('CRITICAL: Échec de la connexion à la volée:', error.message);
+    res.status(500).json({ message: 'Échec de connexion à la base de données', detail: error.message });
+  }
+};
+
 const app = express();
 
 // Middleware
-app.use(express.json({ limit: '50mb' })); // Higher limit for Base64 images
+app.use(express.json({ limit: '50mb' }));
 app.use(cors());
+app.use(connectDB); // Ensure DB is connected for every request
 
 // Routes
 app.use('/api/auth', authRoutes);
