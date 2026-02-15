@@ -23,7 +23,11 @@ app.use('/api/config', configRoutes);
 
 // Root route
 app.get('/', (req, res) => {
-  res.send('API Gamil Rent Car en cours d’exécution...');
+  res.json({
+    status: 'online',
+    message: 'API Gamil Rent Car Production Server',
+    version: '1.0.0'
+  });
 });
 
 // Database connection
@@ -38,8 +42,8 @@ if (!MONGODB_URI) {
     .catch(err => console.error('Erreur de connexion MongoDB:', err.message));
 }
 
-// Only listen if not running in a serverless environment (like Vercel)
-if (!process.env.VERCEL) {
+// App configuration and startup
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`Serveur démarré sur le port ${PORT}`);
   });

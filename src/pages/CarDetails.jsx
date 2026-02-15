@@ -7,8 +7,6 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import BookingModal from '../components/BookingModal';
-import { cars as staticCars } from '../data/cars';
-
 const CarDetails = () => {
   const { id } = useParams();
   const [car, setCar] = useState(null);
@@ -24,11 +22,6 @@ const CarDetails = () => {
         setCar(response.data);
       } catch (error) {
         console.error('Error fetching car details:', error);
-        // Fallback to static data if API fails (searching by ID or name)
-        const fallbackCar = staticCars.find(c => c.id.toString() === id || c._id === id || c.name === id);
-        if (fallbackCar) {
-          setCar(fallbackCar);
-        }
       } finally {
         setLoading(false);
       }

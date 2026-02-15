@@ -8,8 +8,6 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import FloatingActions from '../components/FloatingActions';
 
 import api from '../services/api';
-import { cars as staticCars } from '../data/cars';
-
 const Home = () => {
   const [cars, setCars] = useState([]);
   const [filters, setFilters] = useState({
@@ -25,18 +23,10 @@ const Home = () => {
       try {
         setIsLoading(true);
         const response = await api.get('/cars');
-        const apiCars = Array.isArray(response.data) ? response.data : [];
-        
-        if (apiCars.length > 0) {
-          setCars(apiCars);
-        } else {
-          // Fallback to static data if API returns empty
-          setCars(staticCars);
-        }
+        setCars(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error('Error fetching cars for home page:', error);
-        // Fallback to static data on error
-        setCars(staticCars); 
+        setCars([]); 
       } finally {
         setIsLoading(false);
       }

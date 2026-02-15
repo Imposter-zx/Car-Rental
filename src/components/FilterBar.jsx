@@ -34,7 +34,7 @@ const FilterBar = ({ filters, setFilters }) => {
             onChange={(e) => setFilters(prev => ({ ...prev, transmission: e.target.value }))}
           >
             <option value="All">Toutes</option>
-            <option value="Manuelle">Manuelle</option>
+            <option value="Manuel">Manuelle</option>
             <option value="Automatique">Automatique</option>
           </select>
         </div>
