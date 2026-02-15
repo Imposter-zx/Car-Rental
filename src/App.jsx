@@ -8,6 +8,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './components/admin/AdminLayout';
 import Bookings from './pages/admin/Bookings';
 import Dashboard from './pages/admin/Dashboard';
+import FleetManagement from './pages/admin/FleetManagement';
+import Customers from './pages/admin/Customers';
+import Settings from './pages/admin/Settings';
+import { AuthProvider } from './context/AuthContext';
 import { Footer } from './components/Sections';
 
 function App() {
