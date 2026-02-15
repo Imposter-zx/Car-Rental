@@ -61,6 +61,14 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Identifiants invalides' });
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error('CRITICAL: JWT_SECRET environment variable is not defined!');
+      return res.status(500).json({ 
+        message: 'Erreur configuration serveur', 
+        detail: 'JWT_SECRET is missing' 
+      });
+    }
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -69,7 +77,12 @@ router.post('/login', async (req, res) => {
 
     res.json({ token, user: { id: user._id, email: user.email, name: user.name, role: user.role } });
   } catch (error) {
-    res.status(500).json({ message: 'Erreur serveur' });
+    console.error('Login Route Error:', error);
+    res.status(500).json({ 
+      message: 'Erreur serveur', 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
