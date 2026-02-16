@@ -31,7 +31,19 @@ const connectDB = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('CRITICAL: Échec de la connexion à la volée:', error.message);
-    res.status(500).json({ message: 'Échec de connexion à la base de données', detail: error.message });
+    
+    let hint = "Veuillez vérifier votre MONGODB_URI dans les variables d'environnement Vercel.";
+    if (error.message.includes('bad auth') || error.message.includes('Authentication failed')) {
+      hint = "L'authentification a échoué. Votre nom d'utilisateur ou mot de passe dans MONGODB_URI est incorrect.";
+    } else if (error.message.includes('ETIMEDOUT') || error.message.includes('ENOTFOUND')) {
+      hint = "Délai d'attente dépassé. Vérifiez que votre cluster Atlas est actif et que l'accès réseau (IP Whitelist 0.0.0.0/0) est configuré.";
+    }
+
+    res.status(500).json({ 
+      message: 'Échec de connexion à la base de données', 
+      detail: error.message,
+      hint: hint
+    });
   }
 };
 
