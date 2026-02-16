@@ -14,7 +14,7 @@ const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 300,
-    image: "https://images.carprices.com/pricefiles/0/4904/original/2021-dacia-logan.jpg",
+    image: "/dacia-logan.png",
     isAvailable: true,
     engine: "1.5 dCi",
     description: "La Dacia Logan est la berline familiale par excellence, offrant un espace généreux et une économie de carburant imbattable."
@@ -26,7 +26,7 @@ const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 350,
-    image: "https://www.largus.fr/images/images/dacia-sandero-stepway-2021-15.jpg",
+    image: "/dacia-sandero.png",
     isAvailable: true,
     engine: "1.5 dCi",
     description: "Moderne et robuste, la Sandero Stepway est parfaite pour naviguer dans les rues de Casablanca avec style."
@@ -38,7 +38,7 @@ const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 450,
-    image: "https://www.largus.fr/images/images/dacia-duster-2-phase-2-2021-6.jpg",
+    image: "/dacia-duster.png",
     isAvailable: true,
     engine: "1.5 dCi 4x2",
     description: "Un SUV polyvalent capable de vous emmener partout, du centre-ville aux plages environnantes."
@@ -50,7 +50,7 @@ const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 400,
-    image: "https://cdn.motor1.com/images/mgl/1XmE9/s1/renault-clio-hybrid-2020.jpg",
+    image: "/renault-clio.png",
     isAvailable: true,
     engine: "1.5 Blue dCi",
     description: "La référence des citadines. Confortable, technologique et très agréable à conduire."
@@ -62,7 +62,7 @@ const cars = [
     fuel: "Essence",
     seats: 5,
     price: 450,
-    image: "https://cdn.motor1.com/images/mgl/oY7Xw/s1/2020-opel-corsa.jpg",
+    image: "/opel-corsa.png",
     isAvailable: true,
     engine: "1.2 Turbo",
     description: "Design allemand et boîte automatique pour une conduite fluide et sans effort."
@@ -74,7 +74,7 @@ const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 500,
-    image: "https://www.largus.fr/images/images/peugeot-208-gt-line-2019-12.jpg",
+    image: "/peugeot-208.png",
     isAvailable: true,
     engine: "1.5 BlueHDi",
     description: "L'élégance à la française. Un intérieur i-Cockpit futuriste pour une expérience premium."
@@ -86,7 +86,7 @@ const cars = [
     fuel: "Diesel",
     seats: 5,
     price: 800,
-    image: "https://cdn.motor1.com/images/mgl/MkOOn/s1/2021-hyundai-tucson-front-view.jpg",
+    image: "/hyundai-tucson.png",
     isAvailable: true,
     engine: "1.6 CRDi",
     description: "Un SUV premium avec tout le confort nécessaire pour vos déplacements professionnels ou familiaux."
@@ -98,7 +98,7 @@ const cars = [
     fuel: "Essence",
     seats: 5,
     price: 750,
-    image: "https://www.volkswagen.co.uk/idhub/dotcom/content/dam/dotcom/en_gb/models/t-roc/t-roc-pa/VWC_80327_T-Roc_R-Line_Kings_Red_1.jpg",
+    image: "/vw-troc.png",
     isAvailable: true,
     engine: "1.5 TSI",
     description: "Sportif et robuste, le T-Roc combine le meilleur de la technologie Volkswagen avec un design audacieux."
