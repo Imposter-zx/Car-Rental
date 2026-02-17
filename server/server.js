@@ -76,6 +76,8 @@ mongoose.connection.on('error', err => {
   console.error('CRITICAL: Erreur Mongoose:', err);
 });
 
+const PORT = process.env.PORT || 5000;
+
 // App configuration and startup
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(PORT, () => {

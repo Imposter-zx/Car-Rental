@@ -22,7 +22,8 @@ const Login = () => {
     if (result.success) {
       navigate('/admin');
     } else {
-      setError(result.error);
+      // If error is an object (containing detail/hint), store it. Otherwise store string.
+      setError(result.errorData || result.error);
     }
     setIsLoading(false);
   };
@@ -53,10 +54,18 @@ const Login = () => {
               <motion.div 
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl flex items-center gap-3 text-sm"
+                className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl space-y-2 text-sm"
               >
-                <AlertCircle size={18} />
-                <span>{error}</span>
+                <div className="flex items-center gap-3">
+                  <AlertCircle size={18} />
+                  <span className="font-semibold">{typeof error === 'string' ? error : error.message}</span>
+                </div>
+                {typeof error === 'object' && error.detail && (
+                  <p className="text-xs opacity-80 pl-7">{error.detail}</p>
+                )}
+                {typeof error === 'object' && error.hint && (
+                  <p className="text-xs font-medium text-primary-light pl-7 underline decoration-primary/30 underline-offset-2">💡 {error.hint}</p>
+                )}
               </motion.div>
             )}
 
