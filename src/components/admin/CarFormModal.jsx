@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Save, Car, Camera, DollarSign, Info, ToggleLeft, ToggleRight, Upload, Link as LinkIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const CarFormModal = ({ isOpen, onClose, onSubmit, car = null }) => {
-  const [imageSource, setImageSource] = useState('url');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(car || {
     name: '',
     category: '',
     transmission: 'Manuel',
@@ -17,25 +16,7 @@ const CarFormModal = ({ isOpen, onClose, onSubmit, car = null }) => {
     isAvailable: true
   });
 
-  useEffect(() => {
-    if (car) {
-      setFormData(car);
-      setImageSource(car.image?.startsWith('data:') ? 'file' : 'url');
-    } else {
-      setFormData({
-        name: '',
-        category: '',
-        transmission: 'Manuel',
-        fuel: 'Diesel',
-        seats: 5,
-        price: '',
-        image: '',
-        engine: '',
-        description: '',
-        isAvailable: true
-      });
-    }
-  }, [car, isOpen]);
+  const [imageSource, setImageSource] = useState(car?.image?.startsWith('data:') ? 'file' : 'url');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

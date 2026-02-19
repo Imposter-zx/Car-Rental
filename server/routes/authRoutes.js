@@ -10,7 +10,7 @@ router.get('/me', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
@@ -24,7 +24,7 @@ router.put('/profile', auth, async (req, res) => {
     if (email) user.email = email;
     await user.save();
     res.json({ id: user._id, name: user.name, email: user.email, role: user.role });
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
@@ -41,7 +41,7 @@ router.put('/password', auth, async (req, res) => {
     user.password = newPassword;
     await user.save();
     res.json({ message: 'Mot de passe mis à jour avec succès' });
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });

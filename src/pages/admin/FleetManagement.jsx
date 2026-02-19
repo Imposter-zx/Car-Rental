@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Plus, 
   Search, 
@@ -31,9 +31,9 @@ const FleetManagement = () => {
     if (user) {
       fetchCars();
     }
-  }, [user]);
+  }, [user, fetchCars]);
 
-  const fetchCars = async () => {
+  const fetchCars = useCallback(async () => {
     if (isDemo) {
       setIsLoading(true);
       // Simulate API delay
@@ -56,7 +56,7 @@ const FleetManagement = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isDemo]);
 
   const handleAddCar = () => {
     setSelectedCar(null);
@@ -287,6 +287,7 @@ const FleetManagement = () => {
         onClose={() => setIsModalOpen(false)} 
         onSubmit={handleSubmitModal}
         car={selectedCar}
+        key={selectedCar?._id || selectedCar?.id || 'new'}
       />
     </div>
   );

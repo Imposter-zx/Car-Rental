@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Car, Menu, X, Phone, Sun, Moon, LayoutDashboard, LogOut, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -10,7 +10,6 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [whatsappNumber, setWhatsappNumber] = useState('212600000000');
-  const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -61,7 +60,6 @@ const Navbar = () => {
     { name: 'Contact', path: '/#contact' },
   ];
 
-  const isActive = (path) => location.pathname === path || location.hash === path;
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass-morphism dark:bg-luxury-gray/80 bg-white/80 py-2 shadow-lg' : 'bg-transparent py-4'}`}>

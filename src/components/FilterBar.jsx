@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 
-const FilterBar = ({ filters, setFilters }) => {
+const FilterBar = ({ setFilters }) => {
   return (
     <div className="glass-morphism rounded-2xl p-6 mb-12 flex flex-col lg:flex-row items-center gap-6">
       <div className="flex-1 w-full relative">

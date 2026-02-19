@@ -107,7 +107,9 @@ const useWhatsApp = () => {
       try {
         const res = await api.get('/config');
         if (res.data && res.data.whatsapp_number) setNumber(res.data.whatsapp_number);
-      } catch (e) {}
+      } catch (error) {
+        console.error('Error fetching WhatsApp config:', error);
+      }
     };
     fetchConfig();
   }, []);

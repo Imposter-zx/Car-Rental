@@ -15,7 +15,8 @@ import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 const Bookings = () => {
-  const { user } = useAuth();
+  // useAuth() is used to check if user is logged in via context, but user object not directly needed here
+  useAuth();
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 

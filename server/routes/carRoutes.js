@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
   try {
     const cars = await Car.find().sort({ createdAt: -1 });
     res.json(cars);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'Erreur lors de la récupération des voitures' });
   }
 });
@@ -22,7 +22,7 @@ router.get('/:id', async (req, res) => {
     const car = await Car.findById(req.params.id);
     if (!car) return res.status(404).json({ message: 'Voiture non trouvée' });
     res.json(car);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'Erreur lors de la récupération de la voiture' });
   }
 });
@@ -58,7 +58,7 @@ router.delete('/:id', auth, async (req, res) => {
     const car = await Car.findByIdAndDelete(req.params.id);
     if (!car) return res.status(404).json({ message: 'Voiture non trouvée' });
     res.json({ message: 'Voiture supprimée avec succès' });
-  } catch (error) {
+  } catch {
     res.status(400).json({ message: 'Erreur lors de la suppression' });
   }
 });

@@ -70,7 +70,7 @@ const Settings = () => {
     try {
       await updateProfile(profileData);
       setMessage({ type: 'success', text: 'Profil mis à jour avec succès !' });
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erreur lors de la mise à jour.' });
     } finally {
       setIsSaving(false);
@@ -83,7 +83,7 @@ const Settings = () => {
       setConfigData(prev => ({ ...prev, [key]: value }));
       setMessage({ type: 'success', text: 'Paramètre système mis à jour !' });
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erreur système.' });
     }
   };
