@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Car, 
-  Users, 
-  Calendar, 
-  TrendingUp, 
-  ArrowUpRight, 
+import {
+  Car,
+  Users,
+  Calendar,
+  TrendingUp,
+  ArrowUpRight,
   ArrowDownRight,
   Clock,
   CheckCircle2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import api from '../../services/api';
+import { supabase } from '../../lib/supabase';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -29,12 +29,15 @@ const Dashboard = () => {
     try {
       setIsLoading(true);
       const [carsRes, bookingsRes] = await Promise.all([
-        api.get('/cars'),
-        api.get('/bookings')
+        supabase.from('cars').select('*'),
+        supabase.from('bookings').select('*').order('created_at', { ascending: false })
       ]);
 
-      const cars = Array.isArray(carsRes.data) ? carsRes.data : [];
-      const bookings = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
+      if (carsRes.error) throw carsRes.error;
+      if (bookingsRes.error) throw bookingsRes.error;
+
+      const cars = carsRes.data || [];
+      const bookings = bookingsRes.data || [];
 
       setStats({
         totalCars: cars.length,
@@ -66,7 +69,7 @@ const Dashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, i) => (
-          <motion.div 
+          <motion.div
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -99,7 +102,7 @@ const Dashboard = () => {
           <div className="p-8">
             <div className="space-y-6">
               {isLoading ? (
-                 <div className="flex justify-center py-10"><Clock className="animate-spin text-primary" /></div>
+                <div className="flex justify-center py-10"><Clock className="animate-spin text-primary" /></div>
               ) : stats.recentBookings.length === 0 ? (
                 <p className="text-gray-500 text-center py-10 uppercase text-xs font-bold">Aucune activité récente</p>
               ) : (
@@ -116,9 +119,8 @@ const Dashboard = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-xs font-bold dark:text-white">{new Date(booking.createdAt).toLocaleDateString()}</p>
-                      <span className={`text-[10px] uppercase font-black tracking-widest ${
-                        booking.status === 'Confirmé' ? 'text-green-500' : 'text-orange-500'
-                      }`}>{booking.status}</span>
+                      <span className={`text-[10px] uppercase font-black tracking-widest ${booking.status === 'Confirmé' ? 'text-green-500' : 'text-orange-500'
+                        }`}>{booking.status}</span>
                     </div>
                   </div>
                 ))
@@ -135,13 +137,13 @@ const Dashboard = () => {
             Pensez à mettre à jour les disponibilités après chaque confirmation pour garantir une expérience client premium et sans erreur.
           </p>
           <div className="mt-auto pt-8 border-t border-white/20">
-             <div className="flex justify-between items-center">
-               <span className="text-xs font-bold uppercase tracking-widest">Niveau Performance</span>
-               <span className="text-xl font-black">XCELLENT</span>
-             </div>
-             <div className="w-full h-1.5 bg-white/20 rounded-full mt-3 overflow-hidden">
-                <div className="w-4/5 h-full bg-white rounded-full"></div>
-             </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-bold uppercase tracking-widest">Niveau Performance</span>
+              <span className="text-xl font-black">XCELLENT</span>
+            </div>
+            <div className="w-full h-1.5 bg-white/20 rounded-full mt-3 overflow-hidden">
+              <div className="w-4/5 h-full bg-white rounded-full"></div>
+            </div>
           </div>
         </div>
       </div>

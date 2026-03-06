@@ -7,8 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SkeletonLoader from '../components/SkeletonLoader';
 import FloatingActions from '../components/FloatingActions';
 
-import api from '../services/api';
+import { supabase } from '../lib/supabase';
 import { cars as staticCars } from '../data/cars';
+
 const Home = () => {
   const [cars, setCars] = useState([]);
   const [filters, setFilters] = useState({
@@ -23,12 +24,17 @@ const Home = () => {
     const fetchCars = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get('/cars');
-        const apiCars = Array.isArray(response.data) ? response.data : [];
-        setCars(apiCars.length > 0 ? apiCars : staticCars);
+        const { data, error } = await supabase
+          .from('cars')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        setCars(data && data.length > 0 ? data : staticCars);
       } catch (error) {
         console.error('Error fetching cars for home page:', error);
-        setCars(staticCars); 
+        setCars(staticCars);
       } finally {
         setIsLoading(false);
       }
@@ -64,9 +70,9 @@ const Home = () => {
   return (
     <main className="bg-luxury-black min-h-screen">
       <Hero />
-      
+
       <section id="cars" className="py-24 container mx-auto px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -81,7 +87,7 @@ const Home = () => {
         {isLoading ? (
           <SkeletonLoader />
         ) : filteredCars.length > 0 ? (
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -99,7 +105,7 @@ const Home = () => {
         ) : (
           <div className="text-center py-20 bg-luxury-gray rounded-3xl border border-dashed border-white/10">
             <p className="text-gray-400 text-lg">Aucune voiture ne correspond à vos critères.</p>
-            <button 
+            <button
               onClick={() => setFilters({ search: '', category: 'All', transmission: 'All', maxPrice: '1000' })}
               className="mt-4 text-primary font-semibold hover:underline"
             >

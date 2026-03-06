@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Fuel, Users, Gauge, Zap, CheckCircle2, 
-  MessageSquare, ChevronLeft, Shield, Snowflake, MapPin 
+import {
+  Fuel, Users, Gauge, Zap, CheckCircle2,
+  MessageSquare, ChevronLeft, Shield, Snowflake, MapPin
 } from 'lucide-react';
-import api from '../services/api';
+import { supabase } from '../lib/supabase';
 import BookingModal from '../components/BookingModal';
 import { cars as staticCars } from '../data/cars';
+
 const CarDetails = () => {
   const { id } = useParams();
   const [car, setCar] = useState(null);
@@ -19,13 +20,23 @@ const CarDetails = () => {
     const fetchCar = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/cars/${id}`);
-        setCar(response.data);
+        // Try Supabase first
+        const { data, error } = await supabase
+          .from('cars')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (!error && data) {
+          setCar(data);
+        } else {
+          // Fallback to static data
+          const fallbackCar = staticCars.find(c => c.id === parseInt(id) || c._id === id || c.id === id);
+          if (fallbackCar) setCar(fallbackCar);
+          else throw new Error('Car not found');
+        }
       } catch (error) {
         console.error('Error fetching car details:', error);
-        // Fallback to static data
-        const fallbackCar = staticCars.find(c => c.id === parseInt(id) || c._id === id);
-        if (fallbackCar) setCar(fallbackCar);
       } finally {
         setLoading(false);
       }
@@ -56,7 +67,7 @@ const CarDetails = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left: Image Slider/Gallery */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             className="space-y-4"
@@ -65,19 +76,19 @@ const CarDetails = () => {
               <img src={car.image} alt={car.name} className="w-full h-full object-cover" />
             </div>
             <div className="grid grid-cols-3 gap-4">
-               {[1, 2, 3].map((_, i) => (
-                 <div key={i} className="rounded-xl overflow-hidden h-24 border border-white/5 opacity-50 hover:opacity-100 transition-opacity cursor-pointer">
-                    <img src={car.image} alt={car.name} className="w-full h-full object-cover" />
-                 </div>
-               ))}
+              {[1, 2, 3].map((_, i) => (
+                <div key={i} className="rounded-xl overflow-hidden h-24 border border-white/5 opacity-50 hover:opacity-100 transition-opacity cursor-pointer">
+                  <img src={car.image} alt={car.name} className="w-full h-full object-cover" />
+                </div>
+              ))}
             </div>
           </motion.div>
 
           {/* Right: Info */}
-          <motion.div 
-             initial={{ opacity: 0, x: 30 }}
-             animate={{ opacity: 1, x: 0 }}
-             className="flex flex-col"
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex flex-col"
           >
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-4">
@@ -97,11 +108,11 @@ const CarDetails = () => {
               </h1>
               <div className="flex items-center gap-4 mt-6 text-gray-500 text-sm font-medium">
                 <span className="flex items-center gap-2">
-                   <MapPin className="w-4 h-4 text-primary" /> Livraison possible à Casablanca
+                  <MapPin className="w-4 h-4 text-primary" /> Livraison possible à Casablanca
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-2">
-                   <Fuel className="w-4 h-4 text-primary" /> Consommation économique
+                  <Fuel className="w-4 h-4 text-primary" /> Consommation économique
                 </span>
               </div>
             </div>
@@ -125,45 +136,45 @@ const CarDetails = () => {
             </div>
 
             <div className="lg:sticky lg:top-32 space-y-4">
-               <div className="p-8 bg-luxury-gray border border-white/5 rounded-[32px] shadow-2xl relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -z-10 group-hover:bg-primary/10 transition-all"></div>
-                  <div className="flex flex-col gap-6">
-                    <div className="flex justify-between items-end border-b border-white/5 pb-6">
-                      <div>
-                        <p className="text-gray-500 text-xs uppercase font-black tracking-widest mb-1">Prix par jour</p>
-                        <p className="text-4xl font-black text-white">{car.price} DH</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-primary font-black text-xl">{car.price * 7} DH</p>
-                        <p className="text-[10px] text-gray-500 uppercase font-bold">Total / Semaine</p>
-                      </div>
+              <div className="p-8 bg-luxury-gray border border-white/5 rounded-[32px] shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -z-10 group-hover:bg-primary/10 transition-all"></div>
+                <div className="flex flex-col gap-6">
+                  <div className="flex justify-between items-end border-b border-white/5 pb-6">
+                    <div>
+                      <p className="text-gray-500 text-xs uppercase font-black tracking-widest mb-1">Prix par jour</p>
+                      <p className="text-4xl font-black text-white">{car.price} DH</p>
                     </div>
-                    
-                    <div className="space-y-3">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Frais de service</span>
-                        <span className="text-white font-bold">Inclus</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Assurance tous risques</span>
-                        <span className="text-white font-bold">Inclus</span>
-                      </div>
+                    <div className="text-right">
+                      <p className="text-primary font-black text-xl">{car.price * 7} DH</p>
+                      <p className="text-[10px] text-gray-500 uppercase font-bold">Total / Semaine</p>
                     </div>
-
-                    <button 
-                      onClick={() => setIsBookingOpen(true)}
-                      className="btn-primary w-full py-5 text-lg shadow-xl shadow-primary/20"
-                    >
-                      <MessageSquare className="w-6 h-6 fill-white" />
-                      Réserver via WhatsApp
-                    </button>
                   </div>
-               </div>
-               
-               <div className="flex flex-wrap items-center gap-6 text-[10px] text-gray-500 justify-center uppercase font-black tracking-widest">
-                  <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> Kilométrage illimité</span>
-                  <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> Caution 0 DH</span>
-               </div>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Frais de service</span>
+                      <span className="text-white font-bold">Inclus</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Assurance tous risques</span>
+                      <span className="text-white font-bold">Inclus</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setIsBookingOpen(true)}
+                    className="btn-primary w-full py-5 text-lg shadow-xl shadow-primary/20"
+                  >
+                    <MessageSquare className="w-6 h-6 fill-white" />
+                    Réserver via WhatsApp
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-6 text-[10px] text-gray-500 justify-center uppercase font-black tracking-widest">
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> Kilométrage illimité</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> Caution 0 DH</span>
+              </div>
             </div>
           </motion.div>
         </div>

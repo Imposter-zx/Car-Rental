@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Zap, Banknote, MapPin, Star, MessageSquare } from 'lucide-react';
-import api from '../services/api';
+import { supabase } from '../lib/supabase';
 
 export const Features = () => {
   const features = [
@@ -43,13 +43,16 @@ export const StatsSection = () => {
     const fetchStats = async () => {
       try {
         const [carsRes, bookingsRes] = await Promise.all([
-          api.get('/cars'),
-          api.get('/bookings')
+          supabase.from('cars').select('*'),
+          supabase.from('bookings').select('*')
         ]);
-        
-        const cars = Array.isArray(carsRes.data) ? carsRes.data : [];
-        const bookings = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
-        
+
+        if (carsRes.error) throw carsRes.error;
+        if (bookingsRes.error) throw bookingsRes.error;
+
+        const cars = carsRes.data || [];
+        const bookings = bookingsRes.data || [];
+
         // Calculate unique customers based on names/phones
         const uniqueCustomers = new Set(bookings.map(b => b.userName + b.userPhone)).size;
         const availableCars = cars.filter(c => c.isAvailable).length;
@@ -105,8 +108,14 @@ const useWhatsApp = () => {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await api.get('/config');
-        if (res.data && res.data.whatsapp_number) setNumber(res.data.whatsapp_number);
+        const { data, error } = await supabase
+          .from('config')
+          .select('*')
+          .eq('key', 'whatsapp_number')
+          .single();
+
+        if (error) throw error;
+        if (data && data.value) setNumber(data.value);
       } catch (error) {
         console.error('Error fetching WhatsApp config:', error);
       }
@@ -123,8 +132,8 @@ export const WhatsAppCTA = () => {
       <div className="container mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl mb-6 text-white text-gradient-red uppercase font-black tracking-tighter italic">Besoin d'une voiture rapidement ?</h2>
         <p className="text-gray-400 mb-10 max-w-xl mx-auto uppercase tracking-widest text-xs font-bold">Contactez-nous directement sur WhatsApp pour une réservation instantanée sans paperasse inutile.</p>
-        <a 
-          href={`https://wa.me/${whatsappNumber}`} 
+        <a
+          href={`https://wa.me/${whatsappNumber}`}
           className="inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white px-10 py-4 rounded-full font-bold text-lg transition-all shadow-[0_10px_30px_rgba(37,211,102,0.3)] transform hover:-translate-y-1"
         >
           <MessageSquare className="w-6 h-6 fill-white" />
@@ -158,7 +167,7 @@ export const Testimonials = () => {
               <p className="text-gray-300 italic mb-6">"{r.review}"</p>
               <h4 className="font-bold text-white text-lg uppercase tracking-tighter">— {r.name}</h4>
               <div className="absolute top-4 right-8 text-primary/10 group-hover:text-primary/20 transition-all">
-                 <Star size={40} className="fill-current" />
+                <Star size={40} className="fill-current" />
               </div>
             </div>
           ))}

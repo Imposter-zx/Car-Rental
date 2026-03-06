@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import api from '../services/api';
+import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
 
@@ -8,66 +8,68 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem('token');
-      const isDemo = localStorage.getItem('isDemo') === 'true';
-      if (token && !isDemo) {
-        try {
-          const response = await api.get('/auth/me');
-          setUser({ ...response.data, token });
-        } catch (error) {
-          console.error('Error fetching user:', error);
-          localStorage.removeItem('token');
-        }
-      } else if (token && isDemo) {
-        setUser({ token, isDemo, email: 'admin@gamil.ma', name: 'Admin Gamil' });
+    // Check active sessions and subscribe to auth changes
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setUser({ ...session.user, token: session.access_token });
       }
       setLoading(false);
     };
-    fetchUser();
+
+    getSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setUser({ ...session.user, token: session.access_token });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email, password) => {
-    // Demo credentials fallback (matching seed)
-    if (email === 'admin@gamil.ma' && password === 'admin123') {
-      const demoToken = 'demo-jwt-token-' + Date.now();
-      localStorage.setItem('token', demoToken);
-      localStorage.setItem('isDemo', 'true');
-      setUser({ token: demoToken, isDemo: true, email: 'admin@gamil.ma', name: 'Admin Gamil' });
-      return { success: true };
-    }
-
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { token, user: userData } = response.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('isDemo', 'false');
-      setUser({ ...userData, token });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      setUser({ ...data.user, token: data.session.access_token });
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
       return {
         success: false,
-        error: error.response?.data?.message || 'Login failed',
-        errorData: error.response?.data
+        error: error.message || 'Login failed',
       };
     }
   };
 
   const updateProfile = async (data) => {
-    const response = await api.put('/auth/profile', data);
-    setUser(prev => ({ ...prev, ...response.data }));
-    return response.data;
+    const { data: updatedUser, error } = await supabase.auth.updateUser({
+      data: { name: data.name }
+    });
+    if (error) throw error;
+    setUser(prev => ({ ...prev, ...updatedUser.user }));
+    return updatedUser.user;
   };
 
   const updatePassword = async (data) => {
-    const response = await api.put('/auth/password', data);
-    return response.data;
+    const { error } = await supabase.auth.updateUser({
+      password: data.newPassword
+    });
+    if (error) throw error;
+    return { success: true };
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('isDemo');
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
   };
 

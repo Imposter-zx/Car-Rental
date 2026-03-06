@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Calendar, 
-  User, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  Calendar,
+  User,
+  Phone,
+  MapPin,
+  Clock,
+  CheckCircle2,
+  XCircle,
   Trash2,
   Trash
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import api from '../../services/api';
+import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 
 const Bookings = () => {
@@ -20,15 +20,16 @@ const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
-
   const fetchBookings = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/bookings');
-      setBookings(Array.isArray(response.data) ? response.data : []);
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setBookings(data || []);
     } catch (error) {
       console.error('Error fetching bookings:', error);
       setBookings([]);
@@ -37,10 +38,19 @@ const Bookings = () => {
     }
   };
 
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
   const handleUpdateStatus = async (id, status) => {
     try {
-      await api.patch(`/bookings/${id}`, { status });
-      setBookings(prev => prev.map(b => b._id === id ? { ...b, status } : b));
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status })
+        .eq('id', id);
+
+      if (error) throw error;
+      setBookings(prev => prev.map(b => (b.id || b._id) === id ? { ...b, status } : b));
     } catch (error) {
       console.error('Error updating booking status:', error);
     }
@@ -49,8 +59,13 @@ const Bookings = () => {
   const handleDeleteBooking = async (id) => {
     if (window.confirm('Supprimer cette réservation ?')) {
       try {
-        await api.delete(`/bookings/${id}`);
-        setBookings(prev => prev.filter(b => b._id !== id));
+        const { error } = await supabase
+          .from('bookings')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        setBookings(prev => prev.filter(b => (b.id || b._id) !== id));
       } catch (error) {
         console.error('Error deleting booking:', error);
       }
@@ -114,8 +129,8 @@ const Bookings = () => {
                 </tr>
               ) : (
                 bookings.map((booking) => (
-                  <motion.tr 
-                    key={booking._id} 
+                  <motion.tr
+                    key={booking.id || booking._id}
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     className="group hover:bg-gray-50 dark:hover:bg-white/2 transition-colors"
@@ -142,8 +157,8 @@ const Bookings = () => {
                           <span>{booking.location}</span>
                         </div>
                         <div className="flex items-center gap-2 text-primary font-bold">
-                           <Phone size={12} />
-                           <span>{booking.userPhone}</span>
+                          <Phone size={12} />
+                          <span>{booking.userPhone}</span>
                         </div>
                       </div>
                     </td>
@@ -151,14 +166,13 @@ const Bookings = () => {
                       <p className="font-black text-rose-500 italic">{booking.totalPrice || 'N/A'} DH</p>
                     </td>
                     <td className="px-6 py-4">
-                      <select 
+                      <select
                         value={booking.status}
-                        onChange={(e) => handleUpdateStatus(booking._id, e.target.value)}
-                        className={`text-xs font-bold px-3 py-1.5 rounded-full border-none outline-none cursor-pointer ${
-                          booking.status === 'Confirmé' ? 'bg-green-500/10 text-green-500' :
+                        onChange={(e) => handleUpdateStatus(booking.id || booking._id, e.target.value)}
+                        className={`text-xs font-bold px-3 py-1.5 rounded-full border-none outline-none cursor-pointer ${booking.status === 'Confirmé' ? 'bg-green-500/10 text-green-500' :
                           booking.status === 'Annulé' ? 'bg-red-500/10 text-red-500' :
-                          'bg-orange-500/10 text-orange-500'
-                        }`}
+                            'bg-orange-500/10 text-orange-500'
+                          }`}
                       >
                         <option value="En attente">En attente</option>
                         <option value="Confirmé">Confirmé</option>
@@ -167,8 +181,8 @@ const Bookings = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <button 
-                          onClick={() => handleDeleteBooking(booking._id)}
+                        <button
+                          onClick={() => handleDeleteBooking(booking.id || booking._id)}
                           className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                         >
                           <Trash2 size={18} />

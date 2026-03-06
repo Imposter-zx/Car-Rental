@@ -18,9 +18,9 @@ const CarCard = ({ car }) => {
     >
       {/* Image Section */}
       <div className="relative h-60 overflow-hidden shrink-0">
-        <img 
-          src={car.image} 
-          alt={car.name} 
+        <img
+          src={car.image}
+          alt={car.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -71,13 +71,13 @@ const CarCard = ({ car }) => {
             <span className="text-xs text-gray-400">/ jour</span>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Link 
-              to={`/car/${car._id || car.id}`}
+            <Link
+              to={`/car/${car.id || car._id}`}
               className="py-3 rounded-xl border border-white/10 flex items-center justify-center text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all text-white"
             >
               Voir détails
             </Link>
-            <button 
+            <button
               onClick={() => setIsBookingOpen(true)}
               className="py-3 rounded-xl bg-primary hover:bg-primary-dark text-white flex items-center justify-center text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/20"
             >

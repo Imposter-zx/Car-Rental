@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Edit2, 
-  Trash2, 
-  MoreVertical, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  Plus,
+  Search,
+  Filter,
+  Edit2,
+  Trash2,
+  MoreVertical,
+  CheckCircle2,
+  XCircle,
   ChevronRight,
   TrendingUp,
   Car as CarIcon,
   DollarSign
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import api from '../../services/api';
+import { supabase } from '../../lib/supabase';
 import CarFormModal from '../../components/admin/CarFormModal';
 import { useAuth } from '../../context/AuthContext';
 
@@ -26,12 +26,6 @@ const FleetManagement = () => {
   const [selectedCar, setSelectedCar] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    if (user) {
-      fetchCars();
-    }
-  }, [user, fetchCars]);
 
   const fetchCars = useCallback(async () => {
     if (isDemo) {
@@ -46,17 +40,26 @@ const FleetManagement = () => {
 
     try {
       setIsLoading(true);
-      const response = await api.get('/cars');
-      setCars(Array.isArray(response.data) ? response.data : []);
+      const { data, error } = await supabase
+        .from('cars')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setCars(data || []);
     } catch (error) {
-      if (error.code !== 'ERR_NETWORK') {
-        console.error('Error fetching cars:', error);
-      }
+      console.error('Error fetching cars:', error);
       setCars([]);
     } finally {
       setIsLoading(false);
     }
   }, [isDemo]);
+
+  useEffect(() => {
+    if (user) {
+      fetchCars();
+    }
+  }, [user, fetchCars]);
 
   const handleAddCar = () => {
     setSelectedCar(null);
@@ -75,13 +78,18 @@ const FleetManagement = () => {
         return;
       }
       try {
-        await api.delete(`/cars/${id}`);
+        const { error } = await supabase
+          .from('cars')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
         console.log('Car deleted successfully');
         await fetchCars(); // Refetch to ensure sync with server
       } catch (error) {
         console.error('Error deleting car:', error);
         // Fallback: update local state if fetch fails but delete was likely successful
-        setCars(prev => prev.filter(car => car._id !== id && car.id !== id));
+        setCars(prev => prev.filter(car => (car.id || car._id) !== id));
       }
     }
   };
@@ -100,12 +108,21 @@ const FleetManagement = () => {
     }
 
     try {
-      const carId = selectedCar?._id || selectedCar?.id;
+      const carId = selectedCar?.id || selectedCar?._id;
       if (selectedCar) {
-        await api.put(`/cars/${carId}`, formData);
+        const { error } = await supabase
+          .from('cars')
+          .update(formData)
+          .eq('id', carId);
+
+        if (error) throw error;
         console.log('Car updated successfully');
       } else {
-        await api.post('/cars', formData);
+        const { error } = await supabase
+          .from('cars')
+          .insert([formData]);
+
+        if (error) throw error;
         console.log('Car added successfully');
       }
       await fetchCars(); // Always refetch from source of truth
@@ -123,7 +140,7 @@ const FleetManagement = () => {
     }
   };
 
-  const filteredCars = Array.isArray(cars) ? cars.filter(car => 
+  const filteredCars = Array.isArray(cars) ? cars.filter(car =>
     car.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     car.category.toLowerCase().includes(searchQuery.toLowerCase())
   ) : [];
@@ -135,7 +152,7 @@ const FleetManagement = () => {
           <h1 className="text-3xl font-bold dark:text-white text-luxury-black">Gestion de Flotte</h1>
           <p className="text-gray-500 mt-1">Gérez vos véhicules, tarifs et disponibilités</p>
         </div>
-        <button 
+        <button
           onClick={handleAddCar}
           className="btn-primary px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-primary/30"
         >
@@ -168,9 +185,9 @@ const FleetManagement = () => {
         <div className="p-6 border-b border-gray-100 dark:border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="relative w-full md:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Rechercher par nom ou catégorie..." 
+            <input
+              type="text"
+              placeholder="Rechercher par nom ou catégorie..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all dark:text-white"
@@ -213,8 +230,8 @@ const FleetManagement = () => {
                 </tr>
               ) : (
                 filteredCars.map((car) => (
-                  <motion.tr 
-                    key={car._id || car.id} 
+                  <motion.tr
+                    key={car.id || car._id}
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     className="group hover:bg-gray-50 dark:hover:bg-white/2 transition-colors"
@@ -244,26 +261,25 @@ const FleetManagement = () => {
                       <p className="font-bold text-primary">{car.price} MAD</p>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                        car.isAvailable 
-                          ? 'bg-green-500/10 text-green-500' 
-                          : 'bg-red-500/10 text-red-500'
-                      }`}>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${car.isAvailable
+                        ? 'bg-green-500/10 text-green-500'
+                        : 'bg-red-500/10 text-red-500'
+                        }`}>
                         {car.isAvailable ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
                         {car.isAvailable ? 'Disponible' : 'Indisponible'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
+                        <button
                           onClick={() => handleEditCar(car)}
                           className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
                           title="Modifier"
                         >
                           <Edit2 size={18} />
                         </button>
-                        <button 
-                          onClick={() => handleDeleteCar(car._id || car.id)}
+                        <button
+                          onClick={() => handleDeleteCar(car.id || car._id)}
                           className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                           title="Supprimer"
                         >
@@ -282,12 +298,12 @@ const FleetManagement = () => {
         </div>
       </div>
 
-      <CarFormModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <CarFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmitModal}
         car={selectedCar}
-        key={selectedCar?._id || selectedCar?.id || 'new'}
+        key={selectedCar?.id || selectedCar?._id || 'new'}
       />
     </div>
   );

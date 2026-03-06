@@ -14,6 +14,7 @@
     "seed": "node server/seed.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.98.0",
     "axios": "^1.13.4",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^1.41.3",

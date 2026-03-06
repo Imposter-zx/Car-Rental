@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Car, Menu, X, Phone, Sun, Moon, LayoutDashboard, LogOut, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
+import { supabase } from '../lib/supabase';
 import TrustBar from './TrustBar';
 
 const Navbar = () => {
@@ -16,9 +16,15 @@ const Navbar = () => {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await api.get('/config');
-        if (response.data && response.data.whatsapp_number) {
-          setWhatsappNumber(response.data.whatsapp_number);
+        const { data, error } = await supabase
+          .from('config')
+          .select('*')
+          .eq('key', 'whatsapp_number')
+          .single();
+
+        if (error) throw error;
+        if (data && data.value) {
+          setWhatsappNumber(data.value);
         }
       } catch (error) {
         console.error('Error fetching navbar config:', error);
@@ -78,9 +84,9 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-6">
           <div className="flex items-center gap-8 mr-4">
             {navLinks.map((link) => (
-              <a 
-                key={link.name} 
-                href={link.path} 
+              <a
+                key={link.name}
+                href={link.path}
                 className={`text-sm font-medium hover:text-primary transition-colors uppercase tracking-wider ${scrolled || theme === 'light' ? 'text-luxury-black dark:text-white' : 'text-white'}`}
               >
                 {link.name}
@@ -89,7 +95,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4 border-l border-white/10 pl-6">
-            <button 
+            <button
               onClick={toggleTheme}
               className={`p-2 rounded-xl transition-all ${scrolled || theme === 'light' ? 'bg-gray-100 dark:bg-white/5 text-luxury-black dark:text-white' : 'bg-white/5 text-white'} hover:bg-primary hover:text-white`}
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -99,14 +105,14 @@ const Navbar = () => {
 
             {user ? (
               <div className="flex items-center gap-3">
-                <Link 
-                  to="/admin" 
+                <Link
+                  to="/admin"
                   className={`flex items-center gap-2 text-sm font-bold bg-primary px-4 py-2 rounded-xl text-white hover:bg-primary-dark transition-all shadow-lg shadow-primary/20`}
                 >
                   <LayoutDashboard size={18} />
                   Dashboard
                 </Link>
-                <button 
+                <button
                   onClick={handleLogout}
                   className={`p-2 rounded-xl transition-all ${scrolled || theme === 'light' ? 'bg-gray-100 dark:bg-white/5 text-luxury-black dark:text-white' : 'bg-white/5 text-white'} hover:bg-red-500 hover:text-white`}
                   title="Logout"
@@ -115,8 +121,8 @@ const Navbar = () => {
                 </button>
               </div>
             ) : (
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className={`p-2 rounded-xl transition-all ${scrolled || theme === 'light' ? 'bg-gray-100 dark:bg-white/5 text-luxury-black dark:text-white' : 'bg-white/5 text-white'} hover:bg-primary hover:text-white`}
                 title="Admin Login"
               >
@@ -124,16 +130,16 @@ const Navbar = () => {
               </Link>
             )}
 
-        <a href={`https://wa.me/${whatsappNumber}`} className="btn-primary w-full justify-center py-4">
-          <Phone className="w-5 h-5" />
-          Réserver sur WhatsApp
-        </a>
+            <a href={`https://wa.me/${whatsappNumber}`} className="btn-primary w-full justify-center py-4">
+              <Phone className="w-5 h-5" />
+              Réserver sur WhatsApp
+            </a>
           </div>
         </div>
 
         {/* Mobile Toggle */}
         <div className="flex md:hidden items-center gap-4">
-          <button 
+          <button
             onClick={toggleTheme}
             className={`p-2 rounded-xl ${scrolled || theme === 'light' ? 'text-luxury-black dark:text-white' : 'text-white'}`}
           >
@@ -150,29 +156,29 @@ const Navbar = () => {
         <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-luxury-gray border-b border-gray-100 dark:border-white/10 animate-fade-in shadow-xl">
           <div className="flex flex-col p-6 gap-4">
             {navLinks.map((link) => (
-              <a 
-                key={link.name} 
-                href={link.path} 
-                className="text-lg font-medium text-luxury-black dark:text-white hover:text-primary transition-colors" 
+              <a
+                key={link.name}
+                href={link.path}
+                className="text-lg font-medium text-luxury-black dark:text-white hover:text-primary transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}
               </a>
             ))}
-            
+
             <div className="h-px bg-gray-100 dark:bg-white/10 my-2"></div>
-            
+
             {user ? (
               <>
-                <Link 
-                  to="/admin" 
+                <Link
+                  to="/admin"
                   className="flex items-center gap-3 text-lg font-medium text-primary"
                   onClick={() => setIsOpen(false)}
                 >
                   <LayoutDashboard size={20} />
                   Tableau de bord
                 </Link>
-                <button 
+                <button
                   onClick={handleLogout}
                   className="flex items-center gap-3 text-lg font-medium text-red-500"
                 >
@@ -181,8 +187,8 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="flex items-center gap-3 text-lg font-medium text-luxury-black dark:text-white"
                 onClick={() => setIsOpen(false)}
               >

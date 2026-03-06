@@ -1,42 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Users, 
-  Search, 
-  Mail, 
-  Phone, 
-  Calendar, 
+import {
+  Users,
+  Search,
+  Mail,
+  Phone,
+  Calendar,
   ChevronRight,
   MoreVertical,
   Filter,
   UserPlus,
   Clock
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import api from '../../services/api';
+import { supabase } from '../../lib/supabase';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchCustomersFromBookings();
-  }, []);
-
   const fetchCustomersFromBookings = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/bookings');
-      const bookings = Array.isArray(response.data) ? response.data : [];
-      
+      const { data: bookings, error } = await supabase
+        .from('bookings')
+        .select('*');
+
+      if (error) throw error;
+
       // Aggregate unique customers based on Phone Number (unique identifier for our case)
       const customerMap = new Map();
-      
+
       bookings.forEach(booking => {
         const key = booking.userPhone;
         if (!customerMap.has(key)) {
           customerMap.set(key, {
-            id: booking._id,
+            id: booking.id || booking._id,
             name: booking.userName,
             phone: booking.userPhone,
             email: 'N/A', // Email not collected in current booking form
@@ -53,16 +51,21 @@ const Customers = () => {
           }
         }
       });
-      
+
       setCustomers(Array.from(customerMap.values()));
     } catch (error) {
-      console.error('Error fetching customers:', error);
+      console.error('Error aggregate customers from bookings:', error);
+      setCustomers([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filteredCustomers = customers.filter(customer => 
+  useEffect(() => {
+    fetchCustomersFromBookings();
+  }, []);
+
+  const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     customer.phone.includes(searchQuery)
   );
@@ -82,9 +85,9 @@ const Customers = () => {
         <div className="p-6 border-b border-gray-100 dark:border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="relative w-full md:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Rechercher par nom ou téléphone..." 
+            <input
+              type="text"
+              placeholder="Rechercher par nom ou téléphone..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all dark:text-white"
@@ -106,7 +109,7 @@ const Customers = () => {
             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
               {isLoading ? (
                 <tr>
-                   <td colSpan="5" className="px-6 py-20 text-center">
+                  <td colSpan="5" className="px-6 py-20 text-center">
                     <div className="flex flex-col items-center gap-4">
                       <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                       <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">Analyse des réservations...</p>
@@ -121,8 +124,8 @@ const Customers = () => {
                 </tr>
               ) : (
                 filteredCustomers.map((customer, i) => (
-                  <motion.tr 
-                    key={i} 
+                  <motion.tr
+                    key={i}
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     className="group hover:bg-gray-50 dark:hover:bg-white/2 transition-colors"
@@ -145,7 +148,7 @@ const Customers = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
-                       <span className="text-xl font-black text-luxury-black dark:text-white">{customer.totalBookings}</span>
+                      <span className="text-xl font-black text-luxury-black dark:text-white">{customer.totalBookings}</span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
@@ -155,12 +158,12 @@ const Customers = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                         <a href={`tel:${customer.phone}`} className="p-2 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-white transition-all">
-                            <Phone size={16} />
-                         </a>
-                         <button className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-all">
-                            <MoreVertical size={18} />
-                         </button>
+                        <a href={`tel:${customer.phone}`} className="p-2 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-white transition-all">
+                          <Phone size={16} />
+                        </a>
+                        <button className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-all">
+                          <MoreVertical size={18} />
+                        </button>
                       </div>
                     </td>
                   </motion.tr>
