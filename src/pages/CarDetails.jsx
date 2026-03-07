@@ -43,6 +43,18 @@ const CarDetails = () => {
     };
 
     fetchCar();
+
+    const channel = supabase
+      .channel(`public:cars:${id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'cars' }, () => {
+        // ideally filter: `id=eq.${id}` but 'cars' handles uuid or numeric differently. Fetching on any car change is fine here.
+        fetchCar();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [id]);
 
   if (loading) return <div className="h-screen bg-luxury-black" />;

@@ -41,6 +41,17 @@ const Home = () => {
     };
 
     fetchCars();
+
+    const channel = supabase
+      .channel('public:cars:home')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'cars' }, () => {
+        fetchCars();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Filter cars based on user criteria
